@@ -17,7 +17,8 @@
         data-contract: principal,
         data-id: uint,
         active: bool,
-        access-level: uint
+        access-level: uint,
+        metadata-hash: (buff 32)
     }
 )
 
@@ -40,8 +41,6 @@
     )
 )
 
-;; Core functions remain the same as before...
-
 ;; Implement trait functions
 (define-public (get-data-details (data-id uint))
     (match (map-get? listings { listing-id: data-id })
@@ -49,7 +48,7 @@
             owner: (get owner listing),
             price: (get price listing),
             access-level: (get access-level listing),
-            metadata-hash: "0x" ;; Implement actual metadata hash retrieval
+            metadata-hash: (get metadata-hash listing)
         })
         (err u404)
     )
