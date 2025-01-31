@@ -1,7 +1,7 @@
 ;; marketplace.clar
 ;; Core marketplace functionality for genetic data trading
 
-(use-trait genetic-data-trait 'SP000000000000000000002Q6VF78.genetic-data.genetic-data-trait)
+(use-trait genetic-data-trait .genetic-data-trait.genetic-data-trait)
 
 ;; Constants
 (define-constant ERR-NOT-AUTHORIZED (err u100))
