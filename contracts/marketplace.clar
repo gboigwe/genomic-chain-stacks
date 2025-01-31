@@ -1,78 +1,105 @@
-;; genetic-data.clar - Core contract for genetic data management
+;; marketplace.clar
+;; Core marketplace functionality for genetic data trading
 
-(define-data-var admin principal tx-sender)
-
-;; Data structures
-(define-map genetic-data-entries
-    { data-id: uint }
-    {
-        owner: principal,
-        price: uint,
-        access-level: uint,
-        metadata-hash: (string-utf8 64),
-        encrypted-storage-url: (string-utf8 256)
-    }
-)
-
-(define-map data-access-rights
-    { data-id: uint, user: principal }
-    { 
-        access-level: uint,
-        expiration: uint
-    }
-)
+(use-trait genetic-data-trait 'SP000000000000000000002Q6VF78.genetic-data.genetic-data-trait)
 
 ;; Constants
 (define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-INVALID-DATA (err u101))
-(define-constant ERR-PAYMENT-FAILED (err u102))
+(define-constant ERR-INVALID-PRICE (err u101))
+(define-constant ERR-LISTING-NOT-FOUND (err u102))
+(define-constant ERR-INSUFFICIENT-BALANCE (err u103))
 
-;; Data submission
-(define-public (submit-genetic-data 
-    (data-id uint) 
-    (price uint)
-    (access-level uint)
-    (metadata-hash (string-utf8 64))
-    (encrypted-url (string-utf8 256)))
+;; Data maps
+(define-map listings
+    { listing-id: uint }
+    {
+        owner: principal,
+        price: uint,
+        data-contract: principal,
+        data-id: uint,
+        active: bool,
+        access-level: uint
+    }
+)
+
+(define-map user-purchases
+    { user: principal, listing-id: uint }
+    {
+        purchase-time: uint,
+        access-expiry: uint,
+        access-level: uint
+    }
+)
+
+;; Administrative functions
+(define-data-var marketplace-admin principal tx-sender)
+
+(define-public (set-admin (new-admin principal))
     (begin
-        (asserts! (is-eq tx-sender (var-get admin)) ERR-NOT-AUTHORIZED)
-        (map-set genetic-data-entries
-            { data-id: data-id }
+        (asserts! (is-eq tx-sender (var-get marketplace-admin)) ERR-NOT-AUTHORIZED)
+        (ok (var-set marketplace-admin new-admin))
+    )
+)
+
+;; Listing management
+(define-public (create-listing 
+    (listing-id uint) 
+    (price uint)
+    (data-contract principal)
+    (data-id uint)
+    (access-level uint)
+    )
+    (begin
+        (asserts! (> price u0) ERR-INVALID-PRICE)
+        (map-set listings
+            { listing-id: listing-id }
             {
                 owner: tx-sender,
                 price: price,
-                access-level: access-level,
-                metadata-hash: metadata-hash,
-                encrypted-storage-url: encrypted-url
+                data-contract: data-contract,
+                data-id: data-id,
+                active: true,
+                access-level: access-level
             }
         )
         (ok true)
     )
 )
 
-;; Purchase access
-(define-public (purchase-access (data-id uint) (requested-level uint))
+(define-public (purchase-listing (listing-id uint))
     (let (
-        (data (unwrap! (map-get? genetic-data-entries { data-id: data-id }) ERR-INVALID-DATA))
-        (price (* (get price data) requested-level))
+        (listing (unwrap! (map-get? listings { listing-id: listing-id }) ERR-LISTING-NOT-FOUND))
+        (price (get price listing))
+        (owner (get owner listing))
     )
-        (asserts! (>= (stx-get-balance tx-sender) price) ERR-PAYMENT-FAILED)
-        (try! (stx-transfer? price tx-sender (get owner data)))
-        (map-set data-access-rights
-            { data-id: data-id, user: tx-sender }
+        (asserts! (get active listing) ERR-LISTING-NOT-FOUND)
+        (asserts! (>= (stx-get-balance tx-sender) price) ERR-INSUFFICIENT-BALANCE)
+        (try! (stx-transfer? price tx-sender owner))
+        (map-set user-purchases
+            { user: tx-sender, listing-id: listing-id }
             {
-                access-level: requested-level,
-                expiration: (+ block-height u8640) ;; Access expires after ~30 days
+                purchase-time: block-height,
+                access-expiry: (+ block-height u8640),
+                access-level: (get access-level listing)
             }
         )
         (ok true)
     )
 )
 
-;; Check access rights
-(define-read-only (check-access-rights (data-id uint) (user principal))
-    (match (map-get? data-access-rights { data-id: data-id, user: user })
-        access-data (ok access-data)
+;; Access verification
+(define-read-only (verify-access (user principal) (listing-id uint))
+    (match (map-get? user-purchases { user: user, listing-id: listing-id })
+        purchase-data (ok (< block-height (get access-expiry purchase-data)))
         ERR-NOT-AUTHORIZED
     )
+)
+
+;; Query functions
+(define-read-only (get-listing (listing-id uint))
+    (map-get? listings { listing-id: listing-id })
+)
+
+(define-read-only (get-user-purchase (user principal) (listing-id uint))
+    (map-get? user-purchases { user: user, listing-id: listing-id })
 )
