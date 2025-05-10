@@ -5,6 +5,11 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
+[contracts.genetic-data]
+path = 'contracts/genetic-data.clar'
+clarity_version = 3
+epoch = 3.1
+
 [contracts.genetic-data-trait]
 path = 'contracts/genetic-data-trait.clar'
 clarity_version = 2
@@ -22,3 +27,7 @@ strict = false
 trusted_sender = false
 trusted_caller = false
 callee_filter = false
+
+[repl.remote_data]
+enabled = false
+api_url = 'https://api.hiro.so'
