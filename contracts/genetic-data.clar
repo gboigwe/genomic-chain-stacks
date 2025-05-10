@@ -1,8 +1,6 @@
-
-;; title: genetic-data
-;; version: 1.0.1
-;; summary: Core contract for genetic data management on the Stacks blockchain
-;; description: This contract handles data ownership, access control, and metadata management
+;; genetic-data.clar - Final Version
+;; Core contract for genetic data management on the Stacks blockchain
+;; This contract handles data ownership, access control, and metadata management
 
 ;; Import trait 
 (impl-trait .genetic-data-trait.genetic-data-trait)
@@ -73,6 +71,49 @@
     )
 )
 
+;; Update dataset metadata
+(define-public (update-genetic-data
+    (data-id uint)
+    (new-price (optional uint))
+    (new-access-level (optional uint))
+    (new-metadata-hash (optional (buff 32)))
+    (new-storage-url (optional (string-utf8 256)))
+    (new-description (optional (string-utf8 256))))
+    
+    (let ((dataset (unwrap! (map-get? genetic-datasets { data-id: data-id }) ERR-DATA-NOT-FOUND)))
+        ;; Only the owner can update
+        (asserts! (is-eq (get owner dataset) tx-sender) ERR-NOT-AUTHORIZED)
+        
+        ;; Prepare updated values
+        (let (
+            (updated-price (default-to (get price dataset) new-price))
+            (updated-access-level (default-to (get access-level dataset) new-access-level))
+            (updated-metadata-hash (default-to (get metadata-hash dataset) new-metadata-hash))
+            (updated-storage-url (default-to (get encrypted-storage-url dataset) new-storage-url))
+            (updated-description (default-to (get description dataset) new-description))
+        )
+            ;; Validate access level range
+            (asserts! (> updated-access-level u0) ERR-INVALID-ACCESS-LEVEL)
+            (asserts! (<= updated-access-level u3) ERR-INVALID-ACCESS-LEVEL)
+            
+            (map-set genetic-datasets
+                { data-id: data-id }
+                {
+                    owner: (get owner dataset),
+                    price: updated-price,
+                    access-level: updated-access-level,
+                    metadata-hash: updated-metadata-hash,
+                    encrypted-storage-url: updated-storage-url,
+                    description: updated-description,
+                    created-at: (get created-at dataset),
+                    updated-at: stacks-block-height
+                }
+            )
+            (ok true)
+        )
+    )
+)
+
 ;; Implement trait functions
 
 ;; Get data details - implements trait function
@@ -115,5 +156,48 @@
             }
         )
         (ok true)
+    )
+)
+
+;; Read-only functions for data discovery
+
+;; Get dataset details including description and URLs
+(define-read-only (get-dataset-details (data-id uint))
+    (map-get? genetic-datasets { data-id: data-id })
+)
+
+;; Check if user has access to a dataset
+(define-read-only (get-user-access (data-id uint) (user principal))
+    (map-get? access-rights { data-id: data-id, user: user })
+)
+
+;; Transfer ownership of a dataset
+(define-public (transfer-ownership (data-id uint) (new-owner principal))
+    (let ((dataset (unwrap! (map-get? genetic-datasets { data-id: data-id }) ERR-DATA-NOT-FOUND)))
+        ;; Only the owner can transfer ownership
+        (asserts! (is-eq (get owner dataset) tx-sender) ERR-NOT-AUTHORIZED)
+        
+        (map-set genetic-datasets
+            { data-id: data-id }
+            {
+                owner: new-owner,
+                price: (get price dataset),
+                access-level: (get access-level dataset),
+                metadata-hash: (get metadata-hash dataset),
+                encrypted-storage-url: (get encrypted-storage-url dataset),
+                description: (get description dataset),
+                created-at: (get created-at dataset),
+                updated-at: stacks-block-height
+            }
+        )
+        (ok true)
+    )
+)
+
+;; Set contract owner
+(define-public (set-contract-owner (new-owner principal))
+    (begin
+        (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
+        (ok (var-set contract-owner new-owner))
     )
 )
