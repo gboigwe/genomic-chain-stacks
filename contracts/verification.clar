@@ -1,5 +1,5 @@
 ;; title: verification
-;; version: 1.0.1
+;; version: 1.0.2
 ;; summary: Handles verification of zero-knowledge proofs for genetic data
 ;; description:Enables verification of data properties without revealing the actual data
 
@@ -12,8 +12,9 @@
 (define-constant ERR-ALREADY-EXISTS (err u105))
 (define-constant ERR-NOT-FOUND (err u106))
 (define-constant ERR-VERIFIER-INACTIVE (err u107))
+(define-constant ERR-INVALID-PROOF-TYPE (err u108))
 
-;; Constants
+;; Constants for proof types
 (define-constant PROOF-TYPE-GENE-PRESENCE u1)  ;; Proof that a specific gene exists
 (define-constant PROOF-TYPE-GENE-ABSENCE u2)   ;; Proof that a specific gene does not exist
 (define-constant PROOF-TYPE-GENE-VARIANT u3)   ;; Proof of a specific gene variant
@@ -57,6 +58,12 @@
         verified-at: uint,          ;; When this verification occurred
         verification-tx: (buff 32)  ;; Transaction ID of the verification
     }
+)
+
+;; Map data IDs to their proofs for easier lookup
+(define-map data-proofs
+    { data-id: uint, proof-type: uint }
+    { proof-ids: (list 10 uint) }  ;; Store up to 10 proofs per data-id/type combination
 )
 
 ;; Counters
@@ -123,26 +130,49 @@
     (proof-hash (buff 32)) 
     (parameters (buff 256)))
     
-    (let ((proof-id (var-get next-proof-id)))
-        ;; Update the counter for next proof
-        (var-set next-proof-id (+ proof-id u1))
+    (begin
+        ;; Validate proof type
+        (asserts! (or 
+            (is-eq proof-type PROOF-TYPE-GENE-PRESENCE)
+            (is-eq proof-type PROOF-TYPE-GENE-ABSENCE)
+            (is-eq proof-type PROOF-TYPE-GENE-VARIANT)
+            (is-eq proof-type PROOF-TYPE-AGGREGATE)
+        ) ERR-INVALID-PROOF-TYPE)
         
-        ;; Register the proof
-        (map-set proof-registry
-            { proof-id: proof-id }
-            {
-                data-id: data-id,
-                proof-type: proof-type,
-                proof-hash: proof-hash,
-                parameters: parameters,
-                creator: tx-sender,
-                verified: false,
-                verifier: none,
-                created-at: stacks-block-height
-            }
+        (let ((proof-id (var-get next-proof-id)))
+            ;; Update the counter for next proof
+            (var-set next-proof-id (+ proof-id u1))
+            
+            ;; Register the proof
+            (map-set proof-registry
+                { proof-id: proof-id }
+                {
+                    data-id: data-id,
+                    proof-type: proof-type,
+                    proof-hash: proof-hash,
+                    parameters: parameters,
+                    creator: tx-sender,
+                    verified: false,
+                    verifier: none,
+                    created-at: stacks-block-height
+                }
+            )
+            
+            ;; Update the data-proofs map to add this proof to the list
+            (match (map-get? data-proofs { data-id: data-id, proof-type: proof-type })
+                existing-proofs (map-set data-proofs
+                    { data-id: data-id, proof-type: proof-type }
+                    { proof-ids: (unwrap! (as-max-len? (append (get proof-ids existing-proofs) proof-id) u10) ERR-INVALID-DATA) }
+                )
+                ;; If no existing proofs, create a new list with just this proof
+                (map-set data-proofs
+                    { data-id: data-id, proof-type: proof-type }
+                    { proof-ids: (list proof-id) }
+                )
+            )
+            
+            (ok proof-id)
         )
-        
-        (ok proof-id)
     )
 )
 
@@ -203,6 +233,77 @@
     )
 )
 
+;; Report a verification failure
+(define-public (report-verification-failure (proof-id uint) (verifier-id uint) (verification-tx (buff 32)))
+    (begin
+        ;; Get proof and verifier
+        (let (
+            (proof (unwrap! (map-get? proof-registry { proof-id: proof-id }) ERR-PROOF-NOT-FOUND))
+            (verifier (unwrap! (map-get? proof-verifiers { verifier-id: verifier-id }) ERR-NOT-FOUND))
+        )
+            ;; Check verifier is active
+            (asserts! (get active verifier) ERR-VERIFIER-INACTIVE)
+            
+            ;; Check verifier is authorized to verify this proof
+            (asserts! (is-eq tx-sender (get address verifier)) ERR-NOT-AUTHORIZED)
+            
+            ;; Update verification count for verifier
+            (map-set proof-verifiers
+                { verifier-id: verifier-id }
+                {
+                    address: (get address verifier),
+                    name: (get name verifier),
+                    active: (get active verifier),
+                    verification-count: (+ (get verification-count verifier) u1),
+                    added-at: (get added-at verifier)
+                }
+            )
+            
+            ;; Record verification result as failed
+            (map-set verification-results
+                { proof-id: proof-id }
+                {
+                    result: false,
+                    verifier: verifier-id,
+                    verified-at: stacks-block-height,
+                    verification-tx: verification-tx
+                }
+            )
+            
+            (ok true)
+        )
+    )
+)
+
+;; Check if data has a verified proof of specified type
+(define-public (check-verified-proof (data-id uint) (proof-type uint))
+    (match (map-get? data-proofs { data-id: data-id, proof-type: proof-type })
+        proof-list (filter-verified-proofs (get proof-ids proof-list))
+        (ok (list)) ;; Return empty list if no proofs exist
+    )
+)
+
+;; Helper function to filter verified proofs
+(define-private (filter-verified-proofs (proof-ids (list 10 uint)))
+    (ok (filter is-proof-verified proof-ids))
+)
+
+;; Helper function to check if a proof is verified
+(define-private (is-proof-verified (proof-id uint))
+    (match (map-get? proof-registry { proof-id: proof-id })
+        proof (get verified proof)
+        false
+    )
+)
+
+;; Get proofs for a specific data ID and proof type
+(define-read-only (get-proofs-by-data-id (data-id uint) (proof-type uint))
+    (match (map-get? data-proofs { data-id: data-id, proof-type: proof-type })
+        proof-list (ok (get proof-ids proof-list))
+        (err ERR-NOT-FOUND)
+    )
+)
+
 ;; Get verifier details
 (define-read-only (get-verifier (verifier-id uint))
     (map-get? proof-verifiers { verifier-id: verifier-id })
@@ -216,6 +317,14 @@
 ;; Get verification result
 (define-read-only (get-verification-result (proof-id uint))
     (map-get? verification-results { proof-id: proof-id })
+)
+
+;; Check if a proof has been verified
+(define-read-only (is-verified (proof-id uint))
+    (match (map-get? proof-registry { proof-id: proof-id })
+        proof (get verified proof)
+        false
+    )
 )
 
 ;; Set contract owner
