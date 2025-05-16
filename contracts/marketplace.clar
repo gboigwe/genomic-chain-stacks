@@ -9,6 +9,7 @@
 (define-constant ERR-LISTING-NOT-FOUND (err u102))
 (define-constant ERR-INSUFFICIENT-BALANCE (err u103))
 (define-constant ERR-INVALID-ACCESS-LEVEL (err u104))
+(define-constant ERR-NOT-FOUND (err u105))
 
 ;; Data maps
 (define-map listings
@@ -21,8 +22,8 @@
         active: bool,
         access-level: uint,
         metadata-hash: (buff 32),
-        created-at: uint,                ;; When listing was created
-        updated-at: uint                 ;; When listing was last updated
+        created-at: uint,
+        updated-at: uint
     }
 )
 
@@ -32,7 +33,16 @@
         purchase-time: uint,
         access-expiry: uint,
         access-level: uint,
-        transaction-id: (buff 32)        ;; Transaction ID for the purchase
+        transaction-id: (buff 32),
+        purchase-price: uint             ;; Price paid for the purchase
+    }
+)
+
+;; Price tiers for different access levels
+(define-map access-level-pricing
+    { listing-id: uint, access-level: uint }
+    {
+        price: uint                      ;; Price for this access level
     }
 )
 
@@ -57,6 +67,8 @@
     
     (begin
         (asserts! (> price u0) ERR-INVALID-PRICE)
+        (asserts! (> access-level u0) ERR-INVALID-ACCESS-LEVEL)
+        (asserts! (<= access-level u3) ERR-INVALID-ACCESS-LEVEL)
         
         (map-set listings
             { listing-id: listing-id }
@@ -72,29 +84,91 @@
                 updated-at: stacks-block-height
             }
         )
+        
+        ;; Set up default pricing tier for this access level
+        (map-set access-level-pricing
+            { listing-id: listing-id, access-level: access-level }
+            { price: price }
+        )
+        
         (ok true)
     )
 )
 
-(define-public (purchase-listing (listing-id uint))
+;; Set tiered pricing for different access levels
+(define-public (set-access-level-price (listing-id uint) (access-level uint) (price uint))
+    (let ((listing (unwrap! (map-get? listings { listing-id: listing-id }) ERR-LISTING-NOT-FOUND)))
+        ;; Only the owner can set prices
+        (asserts! (is-eq tx-sender (get owner listing)) ERR-NOT-AUTHORIZED)
+        (asserts! (> price u0) ERR-INVALID-PRICE)
+        (asserts! (> access-level u0) ERR-INVALID-ACCESS-LEVEL)
+        (asserts! (<= access-level (get access-level listing)) ERR-INVALID-ACCESS-LEVEL)
+        
+        (map-set access-level-pricing
+            { listing-id: listing-id, access-level: access-level }
+            { price: price }
+        )
+        
+        (ok true)
+    )
+)
+
+;; Get price for specific access level
+(define-read-only (get-access-level-price (listing-id uint) (access-level uint))
+    (match (map-get? access-level-pricing { listing-id: listing-id, access-level: access-level })
+        price-info (ok (get price price-info))
+        ;; Fall back to listing default price
+        (match (map-get? listings { listing-id: listing-id })
+            listing (ok (get price listing))
+            (err ERR-LISTING-NOT-FOUND)
+        )
+    )
+)
+
+;; Update listing status
+(define-public (update-listing-status (listing-id uint) (active bool))
+    (let ((listing (unwrap! (map-get? listings { listing-id: listing-id }) ERR-LISTING-NOT-FOUND)))
+        ;; Only the owner can update status
+        (asserts! (is-eq tx-sender (get owner listing)) ERR-NOT-AUTHORIZED)
+        
+        (map-set listings
+            { listing-id: listing-id }
+            (merge listing { 
+                active: active,
+                updated-at: stacks-block-height
+            })
+        )
+        
+        (ok true)
+    )
+)
+
+(define-public (purchase-listing (listing-id uint) (access-level uint))
     (let (
         (listing (unwrap! (map-get? listings { listing-id: listing-id }) ERR-LISTING-NOT-FOUND))
-        (price (get price listing))
         (owner (get owner listing))
     )
         (asserts! (get active listing) ERR-LISTING-NOT-FOUND)
-        (asserts! (>= (stx-get-balance tx-sender) price) ERR-INSUFFICIENT-BALANCE)
-        (try! (stx-transfer? price tx-sender owner))
-        (map-set user-purchases
-            { user: tx-sender, listing-id: listing-id }
-            {
-                purchase-time: stacks-block-height,
-                access-expiry: (+ stacks-block-height u8640),
-                access-level: (get access-level listing),
-                transaction-id: 0x00
-            }
+        (asserts! (> access-level u0) ERR-INVALID-ACCESS-LEVEL)
+        (asserts! (<= access-level (get access-level listing)) ERR-INVALID-ACCESS-LEVEL)
+        
+        (let ((price (unwrap! (get-access-level-price listing-id access-level) ERR-INVALID-PRICE)))
+            (asserts! (>= (stx-get-balance tx-sender) price) ERR-INSUFFICIENT-BALANCE)
+            (try! (stx-transfer? price tx-sender owner))
+            
+            (map-set user-purchases
+                { user: tx-sender, listing-id: listing-id }
+                {
+                    purchase-time: stacks-block-height,
+                    access-expiry: (+ stacks-block-height u8640),
+                    access-level: access-level,
+                    transaction-id: 0x00,
+                    purchase-price: price
+                }
+            )
+            
+            (ok true)
         )
-        (ok true)
     )
 )
 
@@ -127,9 +201,34 @@
                 purchase-time: stacks-block-height,
                 access-expiry: (+ stacks-block-height u8640),
                 access-level: access-level,
-                transaction-id: 0x00
+                transaction-id: 0x00,
+                purchase-price: u0       ;; Admin granted access has no price
             }
         )
+        (ok true)
+    )
+)
+
+;; Extend user access
+(define-public (extend-access (listing-id uint) (user principal) (duration uint))
+    (let (
+        (listing (unwrap! (map-get? listings { listing-id: listing-id }) ERR-LISTING-NOT-FOUND))
+        (purchase (unwrap! (map-get? user-purchases { user: user, listing-id: listing-id }) ERR-NOT-FOUND))
+    )
+        ;; Only owner or admin can extend access
+        (asserts! (or 
+            (is-eq tx-sender (get owner listing))
+            (is-eq tx-sender (var-get marketplace-admin))
+        ) ERR-NOT-AUTHORIZED)
+        
+        ;; Update the purchase record with extended expiry
+        (map-set user-purchases
+            { user: user, listing-id: listing-id }
+            (merge purchase {
+                access-expiry: (+ (get access-expiry purchase) duration)
+            })
+        )
+        
         (ok true)
     )
 )
