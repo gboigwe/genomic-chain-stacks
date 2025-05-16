@@ -1,4 +1,3 @@
-
 ;; title: compliance
 ;; version: 1.0.2
 ;; summary: Manages compliance with healthcare regulations for genetic data
@@ -13,6 +12,7 @@
 (define-constant ERR-NO-CONSENT (err u105))
 (define-constant ERR-INVALID-JURISDICTION (err u106))
 (define-constant ERR-INVALID-PURPOSE (err u107))
+(define-constant ERR-GDPR-RECORD-MISSING (err u108))
 
 ;; Constants for jurisdiction
 (define-constant JURISDICTION-GLOBAL u0)
@@ -232,9 +232,11 @@
         
         ;; Check for GDPR restrictions if applicable
         (if (is-eq (get jurisdiction consent) JURISDICTION-EU)
-            (match (map-get? gdpr-records { data-id: data-id })
-                gdpr-record (asserts! (not (get processing-restricted gdpr-record)) ERR-NOT-AUTHORIZED)
-                true
+            (let ((gdpr-data (map-get? gdpr-records { data-id: data-id })))
+                (if (is-some gdpr-data)
+                    (asserts! (not (get processing-restricted (unwrap! gdpr-data ERR-GDPR-RECORD-MISSING))) ERR-NOT-AUTHORIZED)
+                    true
+                )
             )
             true
         )
@@ -327,8 +329,7 @@
         (asserts! (is-eq (get jurisdiction consent) JURISDICTION-EU) ERR-INVALID-JURISDICTION)
         
         ;; Update GDPR record
-        (match (map-get? gdpr-records { data-id: data-id })
-            gdpr-record
+        (let ((gdpr-record (unwrap! (map-get? gdpr-records { data-id: data-id }) ERR-GDPR-RECORD-MISSING)))
             (map-set gdpr-records
                 { data-id: data-id }
                 {
@@ -338,10 +339,9 @@
                     last-updated: current-time
                 }
             )
-            (err ERR-NOT-FOUND)
+            
+            (ok true)
         )
-        
-        (ok true)
     )
 )
 
@@ -358,8 +358,7 @@
         (asserts! (is-eq (get jurisdiction consent) JURISDICTION-EU) ERR-INVALID-JURISDICTION)
         
         ;; Update GDPR record
-        (match (map-get? gdpr-records { data-id: data-id })
-            gdpr-record
+        (let ((gdpr-record (unwrap! (map-get? gdpr-records { data-id: data-id }) ERR-GDPR-RECORD-MISSING)))
             (map-set gdpr-records
                 { data-id: data-id }
                 {
@@ -369,10 +368,9 @@
                     last-updated: current-time
                 }
             )
-            (err ERR-NOT-FOUND)
+            
+            (ok true)
         )
-        
-        (ok true)
     )
 )
 
@@ -389,8 +387,7 @@
         (asserts! (is-eq (get jurisdiction consent) JURISDICTION-EU) ERR-INVALID-JURISDICTION)
         
         ;; Update GDPR record
-        (match (map-get? gdpr-records { data-id: data-id })
-            gdpr-record
+        (let ((gdpr-record (unwrap! (map-get? gdpr-records { data-id: data-id }) ERR-GDPR-RECORD-MISSING)))
             (map-set gdpr-records
                 { data-id: data-id }
                 {
@@ -400,10 +397,9 @@
                     last-updated: current-time
                 }
             )
-            (err ERR-NOT-FOUND)
+            
+            (ok true)
         )
-        
-        (ok true)
     )
 )
 
@@ -420,8 +416,7 @@
         (asserts! (is-eq (get jurisdiction consent) JURISDICTION-EU) ERR-INVALID-JURISDICTION)
         
         ;; Update GDPR record
-        (match (map-get? gdpr-records { data-id: data-id })
-            gdpr-record
+        (let ((gdpr-record (unwrap! (map-get? gdpr-records { data-id: data-id }) ERR-GDPR-RECORD-MISSING)))
             (map-set gdpr-records
                 { data-id: data-id }
                 {
@@ -431,10 +426,9 @@
                     last-updated: current-time
                 }
             )
-            (err ERR-NOT-FOUND)
+            
+            (ok true)
         )
-        
-        (ok true)
     )
 )
 
