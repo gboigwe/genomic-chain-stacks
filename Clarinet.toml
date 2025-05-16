@@ -17,8 +17,8 @@ epoch = 2.5
 
 [contracts.marketplace]
 path = 'contracts/marketplace.clar'
-clarity_version = 2
-epoch = 2.5
+clarity_version = 3
+epoch = 3.1
 
 [contracts.verification]
 path = 'contracts/verification.clar'
