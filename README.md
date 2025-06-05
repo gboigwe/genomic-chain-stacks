@@ -1,12 +1,12 @@
-# GenomicChain Phase 2: ZK Implementation & Storage
+# GenomicChain Phase 2: Medical Lab Attestations & Storage
 
-This directory contains the Phase 2 implementation of GenomicChain, which provides zero-knowledge proof generation, IPFS storage, and blockchain contract integration for genetic data.
+This directory contains the Phase 2 implementation of GenomicChain, which provides medical lab attestation verification, IPFS storage, and blockchain contract integration for genetic data.
 
 ## 🏗️ Architecture Overview
 
 Phase 2 implements the core privacy-preserving infrastructure:
 
-- **ZK Proofs**: Zero-knowledge proof generation and verification for genetic data
+- **Medical Lab Attestations**: Cryptographically signed verification of genetic data by certified medical institutions
 - **Storage**: Encrypted IPFS storage with multi-tier access control
 - **Contract Integration**: JavaScript clients for all Clarity smart contracts
 - **Utilities**: Cryptographic and data formatting utilities
@@ -15,16 +15,16 @@ Phase 2 implements the core privacy-preserving infrastructure:
 
 ```
 src/
-├── zk-proofs/
-│   ├── generators/          # ZK proof generators
-│   ├── verifiers/          # Proof verification
-│   ├── utils/              # Proof utilities
-│   └── index.js           # ZK proofs entry point
+├── zk-proofs/                 # Medical attestation generators (misnamed - historical)
+│   ├── generators/            # Attestation proof generators
+│   ├── verifiers/            # Attestation verification
+│   ├── utils/                # Attestation utilities
+│   └── index.js             # Attestation system entry point
 ├── storage/
-│   ├── ipfs-client.js     # IPFS integration
-│   ├── encryption.js      # Multi-tier encryption
-│   ├── storage-manager.js # Storage orchestration
-│   └── index.js          # Storage entry point
+│   ├── ipfs-client.js       # IPFS integration
+│   ├── encryption.js        # Multi-tier encryption
+│   ├── storage-manager.js   # Storage orchestration
+│   └── index.js            # Storage entry point
 ├── contract-integration/
 │   ├── genetic-data-client.js    # Genetic data contract client
 │   ├── verification-client.js    # Verification contract client
@@ -32,12 +32,12 @@ src/
 │   ├── compliance-client.js      # Compliance contract client
 │   └── index.js                 # Contracts entry point
 ├── utils/
-│   ├── crypto-utils.js    # Cryptographic utilities
-│   ├── data-formatter.js  # Data format conversion
-│   └── index.js          # Utils entry point
+│   ├── crypto-utils.js      # Cryptographic utilities
+│   ├── data-formatter.js    # Data format conversion
+│   └── index.js            # Utils entry point
 ├── config/
-│   └── phase2-config.js   # Configuration management
-└── main.js               # Main SDK entry point
+│   └── phase2-config.js     # Configuration management
+└── main.js                 # Main SDK entry point
 ```
 
 ## 🚀 Quick Start
@@ -65,7 +65,7 @@ const genomicChain = GenomicChain.create({ config });
 // Initialize with Stacks API and contract addresses
 await genomicChain.initialize(stacksApi, contractAddresses);
 
-// Store genetic data with encryption and proofs
+// Store genetic data with encryption and attestations
 const result = await genomicChain.storeGeneticData(
     geneticData,
     password,
@@ -86,33 +86,62 @@ const retrieved = await genomicChain.retrieveGeneticData(
 );
 ```
 
-## 🔐 Zero-Knowledge Proofs
+## 🏥 Medical Lab Attestation System
 
-### Supported Proof Types
+### What This System Actually Provides
 
-1. **Gene Presence Proofs**: Prove a specific gene exists without revealing the full genome
-2. **Gene Variant Proofs**: Prove specific genetic variants without exposing other variants
-3. **Aggregate Proofs**: Prove statistical properties without revealing individual data points
+**This is a Medical Lab Attestation System, NOT True Zero-Knowledge Proofs**
 
-### Generating Proofs
+1. **Medical Lab Verification**: Certified labs analyze and verify genetic data authenticity
+2. **Cryptographic Attestations**: Labs create digitally signed attestations confirming specific genetic traits
+3. **Hash Storage**: Attestation hashes are stored on-chain for verification while maintaining privacy
+4. **Access Control**: Multi-tier encryption and smart contract permissions control data access
+
+### Supported Attestation Types
+
+1. **Gene Presence Attestations**: Prove a specific gene exists without revealing the full genome
+2. **Gene Variant Attestations**: Prove specific genetic variants without exposing other variants
+3. **Aggregate Attestations**: Prove statistical properties without revealing individual data points
+
+### Generating Attestations
 
 ```javascript
-import { ZKProofFactory } from './src/zk-proofs/index.js';
+import { ZKProofFactory } from './src/zk-proofs/index.js'; // Note: Misnamed for historical reasons
 
-// Create proof generator
+// Create attestation generator (not true ZK proofs)
 const generator = ZKProofFactory.createGenerator('gene-presence');
 
-// Generate proof
-const proof = await generator.generatePresenceProof(
+// Generate lab-style attestation
+const attestation = await generator.generatePresenceProof(
     geneticData,
     'BRCA1',
     { privacyLevel: 'high' }
 );
 
-// Verify proof
+// Verify attestation
 const verifier = ZKProofFactory.createVerifier();
-const isValid = await verifier.verifyProof(proof, { targetGene: 'BRCA1' });
+const isValid = await verifier.verifyProof(attestation, { targetGene: 'BRCA1' });
 ```
+
+### Important Technical Distinctions
+
+**What GenomicChain Provides:**
+- ✅ Medical lab verification of genetic data authenticity
+- ✅ Cryptographically signed attestations from trusted institutions  
+- ✅ Privacy through access controls and encryption
+- ✅ Blockchain-based audit trails for transparency
+- ✅ Regulatory compliance through established medical institutions
+
+**What True Zero-Knowledge Proofs Would Provide:**
+- ❌ Mathematical proofs of genetic traits without any third party
+- ❌ Cryptographic circuits that prove gene presence without revealing data
+- ❌ No dependence on trusted medical institutions
+
+**Why Our Attestation Approach Works:**
+- Leverages existing trusted medical infrastructure that users already trust
+- Practical implementation with current technology
+- Regulatory compliance through established healthcare institutions
+- Faster development and deployment timeline
 
 ## 💾 Storage System
 
@@ -147,7 +176,7 @@ const retrieved = await storage.retrieveGeneticData(
 The storage system supports three access levels:
 
 - **Level 1**: Basic metadata and aggregate statistics
-- **Level 2**: Partial data with filtered information
+- **Level 2**: Partial data with filtered information  
 - **Level 3**: Full access to all genetic information
 
 Each level uses different encryption keys and algorithms for granular access control.
@@ -169,7 +198,7 @@ await geneticDataClient.registerGeneticData({
     accessLevel: 3,
     metadataHash: metadataHash,
     storageUrl: 'ipfs://...',
-    description: 'High-quality genomic data'
+    description: 'Lab-verified genomic data'
 }, senderAddress);
 ```
 
@@ -197,25 +226,25 @@ await marketplaceClient.purchaseListingDirect(
 );
 ```
 
-### Verification Contract
+### Verification Contract (Medical Lab Attestations)
 
 ```javascript
 const verificationClient = contracts.createVerificationClient();
 
-// Register proof
+// Register lab attestation (not ZK proof)
 await verificationClient.registerProof({
     dataId: 12345,
-    proofType: 1, // Gene presence
-    proofHash: proofHashBuffer,
-    parameters: proofParametersBuffer
+    proofType: 1, // Gene presence attestation
+    proofHash: attestationHashBuffer,
+    parameters: attestationParametersBuffer
 }, senderAddress);
 
-// Verify proof
+// Verify lab attestation
 await verificationClient.verifyProof(
-    proofId,
-    verifierId,
+    attestationId,
+    labVerifierId,
     verificationTxId,
-    verifierAddress
+    labAddress
 );
 ```
 
@@ -285,7 +314,7 @@ const config = Phase2Config.forEnvironment('production');
 
 // Get component configuration
 const ipfsConfig = config.getIPFSConfig();
-const zkConfig = config.getZKProofConfig();
+const attestationConfig = config.getZKProofConfig(); // Note: Historical naming
 
 // Update configuration
 config.updateConfig('ipfs', { host: 'my-ipfs-node.com' });
@@ -297,6 +326,35 @@ config.updateConfig('ipfs', { host: 'my-ipfs-node.com' });
 - **Testing**: Fast operations, in-memory storage, minimal security
 - **Staging**: Production-like with test networks
 - **Production**: Full security, monitoring, mainnet contracts
+
+## 🏥 Medical Lab Integration
+
+### Lab Partnership Requirements
+
+**Target Lab Types:**
+- CLIA-certified genetic testing laboratories
+- Academic medical centers with genomics programs  
+- Commercial genetic testing companies
+- Hospital-based genetic labs
+
+**Technical Requirements:**
+- Digital signature capabilities
+- API integration support
+- Regulatory compliance track record
+- Data security certifications
+
+### Attestation Process
+
+1. **Client uploads genetic data** to partner medical lab
+2. **Lab performs verification** and creates signed attestation
+3. **Attestation hash stored on-chain** through verification contract
+4. **Users maintain control** over who can access their verified data
+
+### Partnership Benefits
+- Revenue sharing from data access fees
+- Integration with cutting-edge blockchain technology
+- Expanded research collaboration opportunities
+- Enhanced data verification capabilities
 
 ## 🧪 Testing
 
@@ -311,15 +369,34 @@ npm run test:phase2
 npm run test:report
 ```
 
+### Testing Strategy
+
+1. **Unit Testing**
+   - Individual contract function testing
+   - Attestation generation and verification
+   - Encryption/decryption functionality
+
+2. **Integration Testing**
+   - Contract interaction flows
+   - Frontend-backend integration
+   - Lab system integration
+   - Storage system integration
+
+3. **Security Testing**
+   - Contract vulnerability assessment
+   - Encryption strength verification
+   - Access control penetration testing
+   - Attestation tampering tests
+
 ## 📋 Examples
 
 See `examples/basic-usage.js` for comprehensive usage examples including:
 
-- Data storage and retrieval
-- Proof generation and verification
-- Marketplace interactions
+- Data storage and retrieval with lab verification
+- Attestation generation and verification
+- Marketplace interactions with verified data
 - Compliance management
-- Batch operations
+- Medical lab integration workflows
 
 ```bash
 # Run the example
@@ -328,12 +405,12 @@ node examples/basic-usage.js
 
 ## 🔧 Development
 
-### Adding New Proof Types
+### Adding New Attestation Types
 
-1. Create a new generator in `src/zk-proofs/generators/`
-2. Implement the required interface methods
-3. Add proof type constants to contracts
-4. Update the `ZKProofFactory`
+1. Create a new generator in `src/zk-proofs/generators/` (note: directory name is historical)
+2. Implement the attestation interface methods
+3. Add attestation type constants to contracts
+4. Update the factory
 
 ### Extending Storage
 
@@ -347,17 +424,25 @@ node examples/basic-usage.js
 2. Implement contract interaction methods
 3. Add to `ContractFactory`
 
+### Medical Lab Integration
+
+1. Add new lab integrations in `src/contract-integration/`
+2. Implement lab verification workflows
+3. Create attestation signing processes
+4. Update verification contract
+
 ## 🚨 Security Considerations
 
 - **Private Keys**: Never log or expose private keys
 - **Passwords**: Use strong passwords for encryption
-- **Proof Verification**: Always verify proofs before trusting results
+- **Attestation Verification**: Always verify lab signatures before trusting results
+- **Medical Lab Credentials**: Only work with certified medical institutions
 - **Contract Calls**: Validate all contract parameters
 - **IPFS Security**: Use private IPFS networks for sensitive data
 
 ## 📚 Documentation
 
-- [ZK Proofs Documentation](./docs/zk-proofs.md)
+- [Medical Lab Attestations Documentation](./docs/attestations.md)
 - [Storage System Documentation](./docs/storage.md)
 - [Contract Integration Guide](./docs/contracts.md)
 - [Configuration Reference](./docs/configuration.md)
@@ -371,7 +456,7 @@ node examples/basic-usage.js
    - Verify host/port configuration
    - Check firewall settings
 
-2. **Proof Generation Slow**
+2. **Attestation Generation Slow**
    - Reduce data size for testing
    - Adjust timeout settings
    - Use development environment
@@ -385,6 +470,32 @@ node examples/basic-usage.js
    - Verify password is correct
    - Check data integrity
    - Ensure access level permissions
+
+## 🔬 Technical Clarification
+
+**Important Note on Terminology:**
+
+Some directories and functions in this codebase reference "ZK proofs" - this is historical naming from early development when true zero-knowledge proofs were the intended approach. The actual implementation is a medical lab attestation system.
+
+**What This System Does:**
+- Medical labs verify genetic data and create signed attestations
+- Attestation hashes are stored on-chain for verification
+- Users control access to their lab-verified data through smart contracts
+- Privacy is achieved through encryption and access controls, not cryptographic proofs
+
+**What True ZK Proofs Would Do:**
+- Allow mathematical proof of genetic traits without any third party
+- Use complex cryptographic circuits (ZK-SNARKs/ZK-STARKs)
+- Require no trusted medical institutions
+
+Our attestation approach leverages existing trusted medical infrastructure and provides practical privacy preservation for genetic data sharing.
+
+**Technical Implementation:**
+This system is actually an attestation-based approach where:
+- Medical labs analyze and verify genetic data
+- Labs create cryptographically signed attestations
+- Attestation hashes are stored on blockchain for verification
+- Users maintain control over access to their verified data
 
 ## 🤝 Contributing
 
@@ -400,4 +511,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-🧬 **GenomicChain Phase 2** - Privacy-preserving genetic data infrastructure for the decentralized web.
+🧬 **GenomicChain Phase 2** - Medical lab attestation system for privacy-preserving genetic data infrastructure on the decentralized web.
