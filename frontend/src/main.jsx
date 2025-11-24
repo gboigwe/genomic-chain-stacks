@@ -20,11 +20,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import GenomicChainLanding from './components/landing/GenomicChainLanding.jsx';
-import './index.css'; // Make sure this points to the correct file
+import { WalletProvider } from './contexts/WalletContext.jsx';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <GenomicChainLanding />
+    <WalletProvider>
+      <GenomicChainLanding />
+    </WalletProvider>
   </React.StrictMode>
 );
 
