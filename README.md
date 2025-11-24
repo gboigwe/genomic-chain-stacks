@@ -9,6 +9,7 @@ Phase 2 implements the core privacy-preserving infrastructure:
 - **Medical Lab Attestations**: Cryptographically signed verification of genetic data by certified medical institutions
 - **Storage**: Encrypted IPFS storage with multi-tier access control
 - **Contract Integration**: JavaScript clients for all Clarity smart contracts
+- **Wallet Integration**: WalletConnect (Reown) integration for seamless Stacks wallet connectivity
 - **Utilities**: Cryptographic and data formatting utilities
 
 ## 📁 Directory Structure
@@ -85,6 +86,172 @@ const retrieved = await genomicChain.retrieveGeneticData(
     2 // Access level
 );
 ```
+
+## 🔗 WalletConnect (Reown) Integration
+
+GenomicChain now integrates **WalletConnect** (powered by **Reown** infrastructure) for seamless Stacks wallet connectivity. This enables users to connect their Stacks wallets via QR code scanning and interact with the blockchain securely.
+
+### Features
+
+- ✅ **QR Code Wallet Connection**: Scan with any WalletConnect-compatible Stacks wallet
+- ✅ **Session Management**: Persistent wallet sessions across page refreshes
+- ✅ **Transaction Signing**: Sign messages, transfer STX, call contracts, and deploy contracts
+- ✅ **Multi-Network Support**: Supports both Stacks mainnet and testnet
+- ✅ **Secure & Privacy-Focused**: No private keys stored in the browser
+
+### Setup
+
+1. **Get a WalletConnect Project ID**
+
+   Register your project at [WalletConnect Cloud](https://cloud.walletconnect.com/) (formerly Reown Cloud) to obtain a Project ID.
+
+2. **Configure Environment Variables**
+
+   Create a `.env` file in the `frontend` directory:
+
+   ```bash
+   cd frontend
+   cp .env.example .env
+   ```
+
+   Add your WalletConnect Project ID:
+
+   ```env
+   VITE_WALLETCONNECT_PROJECT_ID=your_project_id_here
+   VITE_STACKS_NETWORK=mainnet
+   VITE_STACKS_API_URL=https://api.mainnet.hiro.so
+   ```
+
+3. **Install Dependencies**
+
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+### Frontend Usage
+
+The wallet integration is provided through a React Context API:
+
+```javascript
+import { useWallet } from './contexts/WalletContext';
+
+function MyComponent() {
+  const {
+    isConnected,
+    isConnecting,
+    address,
+    connect,
+    disconnect,
+    signMessage,
+    transferSTX,
+    callContract
+  } = useWallet();
+
+  // Connect wallet
+  const handleConnect = async () => {
+    await connect('mainnet'); // or 'testnet'
+  };
+
+  // Sign a message
+  const handleSignMessage = async () => {
+    const signature = await signMessage('Hello from GenomicChain!');
+    console.log('Signature:', signature);
+  };
+
+  // Transfer STX
+  const handleTransfer = async () => {
+    const result = await transferSTX(
+      'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM', // recipient
+      1000000, // amount in microSTX (1 STX = 1,000,000 microSTX)
+      'Payment for genetic data'
+    );
+    console.log('Transaction:', result);
+  };
+
+  // Call smart contract
+  const handleContractCall = async () => {
+    const result = await callContract({
+      contractAddress: 'SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7',
+      contractName: 'genetic-data',
+      functionName: 'register-data',
+      functionArgs: [...], // Clarity value arguments
+      postConditions: [],
+      postConditionMode: 'Allow'
+    });
+    console.log('Contract call result:', result);
+  };
+
+  return (
+    <div>
+      {isConnected ? (
+        <>
+          <p>Connected: {address}</p>
+          <button onClick={disconnect}>Disconnect</button>
+        </>
+      ) : (
+        <button onClick={handleConnect} disabled={isConnecting}>
+          {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+### WalletConnect Methods
+
+The wallet context supports all standard Stacks WalletConnect methods:
+
+- **`stacks_signMessage`**: Sign arbitrary messages
+- **`stacks_stxTransfer`**: Transfer STX tokens
+- **`stacks_contractCall`**: Call smart contract functions
+- **`stacks_contractDeploy`**: Deploy new smart contracts
+
+### Compatible Wallets
+
+Any wallet that supports WalletConnect for Stacks, including:
+
+- [Xverse Wallet](https://www.xverse.app/)
+- [Leather Wallet](https://leather.io/) (formerly Hiro Wallet)
+- [Asigna Wallet](https://asigna.io/)
+
+### Technical Implementation
+
+The integration uses:
+
+- **@walletconnect/sign-client**: Core WalletConnect v2 protocol
+- **@walletconnect/modal**: QR code modal for wallet pairing
+- **@walletconnect/utils**: Utility functions for CAIP standards
+- **@stacks/connect**: Stacks-specific transaction building (complementary)
+
+The implementation follows the [CAIP-25](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-25.md) session proposal standard and uses [CAIP-2](https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md) chain identifiers:
+
+- Stacks Mainnet: `stacks:1`
+- Stacks Testnet: `stacks:2147483648`
+
+### Development & Testing
+
+Start the frontend development server:
+
+```bash
+cd frontend
+npm run dev
+```
+
+The wallet connection button appears in the navigation bar. Click it to:
+
+1. Open the WalletConnect QR code modal
+2. Scan with your mobile wallet
+3. Approve the connection
+4. Start interacting with the Stacks blockchain
+
+### Security Considerations
+
+- 🔒 **Private keys never leave your wallet** - All signing happens in the wallet app
+- 🔒 **Session encryption** - WalletConnect uses end-to-end encryption
+- 🔒 **User approval required** - All transactions must be approved in the wallet
+- 🔒 **No sensitive data in localStorage** - Only session topics are persisted
 
 ## 🏥 Medical Lab Attestation System
 

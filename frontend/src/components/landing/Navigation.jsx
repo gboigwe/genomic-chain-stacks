@@ -1,15 +1,16 @@
 // Main navigation component for GenomicChain landing page
 
 import React, { useState } from 'react';
+import { useWallet } from '../../contexts/WalletContext.jsx';
 
 /**
  * Navigation Component
  * Top navigation bar with GenomicChain branding and menu items
- * Includes Connect Wallet integration for Stacks blockchain
+ * Includes WalletConnect integration for Stacks blockchain via Reown infrastructure
  */
 const Navigation = () => {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
+  const { isConnected, isConnecting, address, connect, disconnect } = useWallet();
+  const [networkType, setNetworkType] = useState('mainnet');
 
   // Navigation menu items from design
   const menuItems = [
@@ -20,19 +21,15 @@ const Navigation = () => {
     { label: 'Dashboard', href: '#dashboard' }
   ];
 
-  // Connect wallet function (Stacks integration)
+  // Connect wallet function using WalletConnect/Reown
   const handleConnectWallet = async () => {
     try {
-      // TODO: Integrate with @stacks/connect
-      // For now, simulate connection
-      if (!isWalletConnected) {
-        // Simulate wallet connection
-        setIsWalletConnected(true);
-        setWalletAddress('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM');
+      if (!isConnected) {
+        // Connect via WalletConnect QR code modal
+        await connect(networkType);
       } else {
         // Disconnect wallet
-        setIsWalletConnected(false);
-        setWalletAddress('');
+        await disconnect();
       }
     } catch (error) {
       console.error('Wallet connection error:', error);
@@ -40,9 +37,9 @@ const Navigation = () => {
   };
 
   // Format wallet address for display
-  const formatAddress = (address) => {
-    if (!address) return '';
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const formatAddress = (addr) => {
+    if (!addr) return '';
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
   return (
@@ -77,19 +74,25 @@ const Navigation = () => {
           <div className="flex items-center space-x-4">
             <button
               onClick={handleConnectWallet}
+              disabled={isConnecting}
               className={`
-                px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 
-                ${isWalletConnected 
-                  ? 'bg-[#37A36B] hover:bg-[#37A36B]/80 text-white border border-[#37A36B]' 
+                px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                ${isConnected
+                  ? 'bg-[#37A36B] hover:bg-[#37A36B]/80 text-white border border-[#37A36B]'
                   : 'bg-[#5594E0] hover:bg-[#5594E0]/80 text-white border border-[#5594E0]'
                 }
-                hover:shadow-lg hover:shadow-[#5594E0]/25 transform hover:scale-105
+                ${isConnecting ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-[#5594E0]/25 transform hover:scale-105'}
               `}
             >
-              {isWalletConnected ? (
+              {isConnecting ? (
+                <span className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Connecting...</span>
+                </span>
+              ) : isConnected ? (
                 <span className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-[#2DD4BF] rounded-full animate-pulse" />
-                  <span>{formatAddress(walletAddress)}</span>
+                  <span>{formatAddress(address)}</span>
                 </span>
               ) : (
                 'Connect Wallet'
