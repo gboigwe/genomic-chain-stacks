@@ -1,13 +1,13 @@
 (define-trait genetic-data-trait
     (
         ;; Get data details
-        (get-data-details (uint) (response 
+        (get-data-details (uint) (response
             {
                 owner: principal,
                 price: uint,
                 access-level: uint,
                 metadata-hash: (buff 32)  ;; Changed to buff 32 for proper hash storage
-            } 
+            }
             uint))
 
         ;; Verify access rights

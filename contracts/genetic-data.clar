@@ -1,8 +1,8 @@
-;; genetic-data.clar - Final Version
+;; genetic-data.clar - Clarity 4
 ;; Core contract for genetic data management on the Stacks blockchain
 ;; This contract handles data ownership, access control, and metadata management
 
-;; Import trait 
+;; Import trait
 (impl-trait .genetic-data-trait.genetic-data-trait)
 
 ;; Error codes
@@ -22,8 +22,8 @@
         metadata-hash: (buff 32),          ;; Hash of genetic data metadata
         encrypted-storage-url: (string-utf8 256),  ;; IPFS or other storage URL
         description: (string-utf8 256),     ;; Brief description of the dataset
-        created-at: uint,                  ;; Block height when created
-        updated-at: uint                   ;; Block height when last updated
+        created-at: uint,                  ;; Clarity 4: Unix timestamp using stacks-block-time
+        updated-at: uint                   ;; Clarity 4: Unix timestamp using stacks-block-time
     }
 )
 
@@ -32,7 +32,7 @@
     { data-id: uint, user: principal }
     {
         access-level: uint,                ;; 1=basic, 2=detailed, 3=full
-        expiration: uint,                  ;; Block height when access expires
+        expiration: uint,                  ;; Clarity 4: Unix timestamp when access expires
         granted-by: principal              ;; Who granted the access
     }
 )
@@ -48,12 +48,12 @@
     (metadata-hash (buff 32))
     (storage-url (string-utf8 256))
     (description (string-utf8 256)))
-    
+
     (let ((existing-data (map-get? genetic-datasets { data-id: data-id })))
         (asserts! (is-none existing-data) ERR-DATA-EXISTS)
         (asserts! (> access-level u0) ERR-INVALID-ACCESS-LEVEL)
         (asserts! (<= access-level u3) ERR-INVALID-ACCESS-LEVEL)
-        
+
         (map-set genetic-datasets
             { data-id: data-id }
             {
@@ -63,8 +63,8 @@
                 metadata-hash: metadata-hash,
                 encrypted-storage-url: storage-url,
                 description: description,
-                created-at: stacks-block-height,
-                updated-at: stacks-block-height
+                created-at: stacks-block-time,  ;; Clarity 4: Unix timestamp
+                updated-at: stacks-block-time   ;; Clarity 4: Unix timestamp
             }
         )
         (ok true)
@@ -79,11 +79,11 @@
     (new-metadata-hash (optional (buff 32)))
     (new-storage-url (optional (string-utf8 256)))
     (new-description (optional (string-utf8 256))))
-    
+
     (let ((dataset (unwrap! (map-get? genetic-datasets { data-id: data-id }) ERR-DATA-NOT-FOUND)))
         ;; Only the owner can update
         (asserts! (is-eq (get owner dataset) tx-sender) ERR-NOT-AUTHORIZED)
-        
+
         ;; Prepare updated values
         (let (
             (updated-price (default-to (get price dataset) new-price))
@@ -95,7 +95,7 @@
             ;; Validate access level range
             (asserts! (> updated-access-level u0) ERR-INVALID-ACCESS-LEVEL)
             (asserts! (<= updated-access-level u3) ERR-INVALID-ACCESS-LEVEL)
-            
+
             (map-set genetic-datasets
                 { data-id: data-id }
                 {
@@ -106,7 +106,7 @@
                     encrypted-storage-url: updated-storage-url,
                     description: updated-description,
                     created-at: (get created-at dataset),
-                    updated-at: stacks-block-height
+                    updated-at: stacks-block-time  ;; Clarity 4: Unix timestamp
                 }
             )
             (ok true)
@@ -132,7 +132,7 @@
 ;; Verify access rights - implements trait function
 (define-public (verify-access-rights (data-id uint) (user principal))
     (match (map-get? access-rights { data-id: data-id, user: user })
-        rights (ok (< stacks-block-height (get expiration rights)))
+        rights (ok (< stacks-block-time (get expiration rights)))  ;; Clarity 4: Unix timestamp
         (err u404)
     )
 )
@@ -142,16 +142,16 @@
     (let ((dataset (unwrap! (map-get? genetic-datasets { data-id: data-id }) ERR-DATA-NOT-FOUND)))
         ;; Only the owner can grant access
         (asserts! (is-eq (get owner dataset) tx-sender) ERR-NOT-AUTHORIZED)
-        
+
         ;; Ensure access level is valid
         (asserts! (> access-level u0) ERR-INVALID-ACCESS-LEVEL)
         (asserts! (<= access-level (get access-level dataset)) ERR-INVALID-ACCESS-LEVEL)
-        
+
         (map-set access-rights
             { data-id: data-id, user: user }
             {
                 access-level: access-level,
-                expiration: (+ stacks-block-height u8640), ;; Access expires after ~30 days
+                expiration: (+ stacks-block-time u2592000),  ;; Clarity 4: ~30 days in seconds
                 granted-by: tx-sender
             }
         )
@@ -176,7 +176,7 @@
     (let ((dataset (unwrap! (map-get? genetic-datasets { data-id: data-id }) ERR-DATA-NOT-FOUND)))
         ;; Only the owner can transfer ownership
         (asserts! (is-eq (get owner dataset) tx-sender) ERR-NOT-AUTHORIZED)
-        
+
         (map-set genetic-datasets
             { data-id: data-id }
             {
@@ -187,7 +187,7 @@
                 encrypted-storage-url: (get encrypted-storage-url dataset),
                 description: (get description dataset),
                 created-at: (get created-at dataset),
-                updated-at: stacks-block-height
+                updated-at: stacks-block-time  ;; Clarity 4: Unix timestamp
             }
         )
         (ok true)
