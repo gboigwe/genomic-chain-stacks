@@ -5,32 +5,34 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
+[contracts.compliance]
+path = 'contracts/compliance.clar'
+clarity_version = 4
+epoch = 'latest'
+
 [contracts.genetic-data]
 path = 'contracts/genetic-data.clar'
-clarity_version = 3
-epoch = 3.1
+clarity_version = 4
+epoch = 'latest'
 
 [contracts.genetic-data-trait]
 path = 'contracts/genetic-data-trait.clar'
-clarity_version = 2
-epoch = 2.5
+clarity_version = 4
+epoch = 'latest'
 
 [contracts.marketplace]
 path = 'contracts/marketplace.clar'
-clarity_version = 3
-epoch = 3.1
+clarity_version = 4
+epoch = 'latest'
 
 [contracts.verification]
 path = 'contracts/verification.clar'
-clarity_version = 3
-epoch = 3.1
-
-[contracts.compliance]
-path = 'contracts/compliance.clar'
-clarity_version = 3
-epoch = 3.1
+clarity_version = 4
+epoch = 'latest'
 [repl.analysis]
 passes = ['check_checker']
+
+[repl.analysis.lints]
 
 [repl.analysis.check_checker]
 strict = false
