@@ -1,29 +1,19 @@
-;; title: genetic-data-trait
-;; version:
-;; summary:
-;; description:
+(define-trait genetic-data-trait
+    (
+        ;; Get data details
+        (get-data-details (uint) (response
+            {
+                owner: principal,
+                price: uint,
+                access-level: uint,
+                metadata-hash: (buff 32)  ;; Changed to buff 32 for proper hash storage
+            }
+            uint))
 
-;; traits
-;;
+        ;; Verify access rights
+        (verify-access-rights (uint principal) (response bool uint))
 
-;; token definitions
-;;
-
-;; constants
-;;
-
-;; data vars
-;;
-
-;; data maps
-;;
-
-;; public functions
-;;
-
-;; read only functions
-;;
-
-;; private functions
-;;
-
+        ;; Grant access
+        (grant-access (uint principal uint) (response bool uint))
+    )
+)
