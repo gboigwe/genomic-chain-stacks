@@ -113,7 +113,7 @@
         resolution-status: "investigating",
         investigation-hash: investigation-hash
       })
-    (update-compliance-status tx-sender false)
+    (try! (update-compliance-status tx-sender false))
     (var-set breach-counter breach-id)
     (ok breach-id)))
 
@@ -166,7 +166,7 @@
   (let ((entity-info (unwrap! (map-get? covered-entities entity) ERR-ENTITY-NOT-FOUND)))
     (map-set covered-entities entity
       (merge entity-info { is-compliant: compliant, last-audit: stacks-block-time }))
-    true))
+    (ok true)))
 
 ;; Conduct compliance audit
 (define-public (conduct-audit (entity principal))

@@ -109,14 +109,13 @@
         is-fulfilled: true,
         fulfilled-at: (some stacks-block-time)
       }))
-    (update-oracle-stats tx-sender)
+    (try! (update-oracle-stats tx-sender))
     (var-set response-counter response-id)
     (ok response-id)))
 
 (define-public (verify-response (response-id uint) (is-accurate bool))
   (let ((response (unwrap! (map-get? data-responses response-id) ERR-REQUEST-NOT-FOUND)))
-    (update-reputation (get provider response) is-accurate)
-    (ok true)))
+    (update-reputation (get provider response) is-accurate)))
 
 (define-private (update-oracle-stats (oracle principal))
   (let ((provider (unwrap! (map-get? oracle-providers oracle) ERR-NOT-AUTHORIZED)))

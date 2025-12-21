@@ -141,18 +141,20 @@
     (ok receipt-id)))
 
 (define-public (configure-chain
-    (chain-id (string-ascii 50))
+    (chain-id-param (string-ascii 50))
     (chain-name (string-utf8 100))
     (bridge-address (string-utf8 100))
     (min-confirmations uint))
-  (ok (map-set chain-configurations chain-id
-    {
-      chain-name: chain-name,
-      bridge-address: bridge-address,
-      min-confirmations: min-confirmations,
-      is-enabled: true,
-      total-transfers: u0
-    })))
+  (begin
+    (map-set chain-configurations chain-id-param
+      {
+        chain-name: chain-name,
+        bridge-address: bridge-address,
+        min-confirmations: min-confirmations,
+        is-enabled: true,
+        total-transfers: u0
+      })
+    (ok true)))
 
 (define-public (cancel-transfer (transfer-id uint))
   (let ((transfer (unwrap! (map-get? cross-chain-transfers transfer-id) ERR-TRANSFER-NOT-FOUND)))
@@ -170,8 +172,8 @@
 (define-read-only (get-validation (transfer-id uint) (validator principal))
   (ok (map-get? transfer-validations { transfer-id: transfer-id, validator: validator })))
 
-(define-read-only (get-chain-config (chain-id (string-ascii 50)))
-  (ok (map-get? chain-configurations chain-id)))
+(define-read-only (get-chain-config (chain-id-param (string-ascii 50)))
+  (ok (map-get? chain-configurations chain-id-param)))
 
 (define-read-only (get-transfer-receipt (receipt-id uint))
   (ok (map-get? transfer-receipts receipt-id)))

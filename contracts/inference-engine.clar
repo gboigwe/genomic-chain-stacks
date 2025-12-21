@@ -133,7 +133,7 @@
         status: "completed"
       }))
     (cache-prediction (get input-data-hash request) result-hash (get model-id request) confidence-score)
-    (update-model-performance (get model-id request) confidence-score)
+    (try! (update-model-performance (get model-id request) confidence-score))
     (ok true)))
 
 (define-public (register-validator

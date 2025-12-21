@@ -118,7 +118,7 @@
         reasoning: reasoning,
         voted-at: stacks-block-time
       })
-    (update-vote-tally dispute-id vote)
+    (try! (update-vote-tally dispute-id vote))
     (ok true)))
 
 (define-public (submit-evidence

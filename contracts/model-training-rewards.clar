@@ -78,7 +78,7 @@
     (asserts! (not (get is-claimed contribution)) ERR-ALREADY-CLAIMED)
     (map-set training-contributions contribution-id
       (merge contribution { is-claimed: true }))
-    (update-claimed-stats tx-sender (get reward-amount contribution))
+    (try! (update-claimed-stats tx-sender (get reward-amount contribution)))
     (ok (get reward-amount contribution))))
 
 (define-public (create-reward-pool

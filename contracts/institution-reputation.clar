@@ -96,7 +96,7 @@
         rated-at: stacks-block-time,
         is-verified: false
       })
-    (update-reputation-score institution rating-score)
+    (try! (update-reputation-score institution rating-score))
     (ok true)))
 
 (define-public (update-performance-metrics
@@ -149,7 +149,7 @@
         resolution-status: "open",
         impact-on-reputation: severity
       })
-    (adjust-reputation-for-incident institution severity)
+    (try! (adjust-reputation-for-incident institution severity))
     (var-set incident-counter incident-id)
     (ok incident-id)))
 
