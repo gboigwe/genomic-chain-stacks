@@ -5,442 +5,442 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
-[contracts.access-audit]
+[contracts.x-access-audit]
 path = 'contracts/access-audit.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.ai-model-registry]
+[contracts.ai-model-hub]
 path = 'contracts/ai-model-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.allergy-registry]
+[contracts.allergy-tracker]
 path = 'contracts/allergy-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.anonymization-engine]
+[contracts.anonymization-core]
 path = 'contracts/anonymization-engine.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.api-gateway]
+[contracts.x-api-gateway]
 path = 'contracts/api-gateway.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.breach-detection]
+[contracts.breach-monitor]
 path = 'contracts/breach-detection.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.clinical-trial]
+[contracts.clinical-trials-hub]
 path = 'contracts/clinical-trial.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.cohort-builder]
+[contracts.cohort-manager]
 path = 'contracts/cohort-builder.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.compliance]
+[contracts.compliance-core]
 path = 'contracts/compliance.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.cross-chain-health]
+[contracts.cross-chain-med]
 path = 'contracts/cross-chain-health.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.data-deletion]
+[contracts.data-eraser]
 path = 'contracts/data-deletion.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.data-royalty]
+[contracts.x-data-royalty]
 path = 'contracts/data-royalty.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.diagnosis-record]
+[contracts.diagnosis-tracker]
 path = 'contracts/diagnosis-record.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.dicom-handler]
+[contracts.dicom-processor]
 path = 'contracts/dicom-handler.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.dispute-resolution]
+[contracts.dispute-arbiter]
 path = 'contracts/dispute-resolution.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.emergency-access]
+[contracts.emergency-gateway]
 path = 'contracts/emergency-access.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.encoding-genome]
+[contracts.genome-encoder]
 path = 'contracts/encoding-genome.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.faucet-genomic]
+[contracts.genomic-faucet]
 path = 'contracts/faucet-genomic.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.federated-learning]
+[contracts.federated-ml]
 path = 'contracts/federated-learning.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.fee-collector]
+[contracts.fee-hub]
 path = 'contracts/fee-collector.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.fhir-adapter]
+[contracts.fhir-connector]
 path = 'contracts/fhir-adapter.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.fractional-data-nft]
+[contracts.fractional-nft-core]
 path = 'contracts/fractional-data-nft.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genetic-data]
+[contracts.x-genetic-data]
 path = 'contracts/genetic-data.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genetic-data-trait]
+[contracts.genetic-trait-base]
 path = 'contracts/genetic-data-trait.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-access-control]
+[contracts.genome-acl]
 path = 'contracts/genome-access-control.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-audit]
+[contracts.x-genome-audit]
 path = 'contracts/genome-audit.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-consent]
+[contracts.genome-consent-mgr]
 path = 'contracts/genome-consent.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-encryption]
+[contracts.genome-crypto]
 path = 'contracts/genome-encryption.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-metadata]
+[contracts.genome-meta]
 path = 'contracts/genome-metadata.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-nft]
+[contracts.x-genome-nft]
 path = 'contracts/genome-nft.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-provenance]
+[contracts.genome-lineage]
 path = 'contracts/genome-provenance.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-registry]
+[contracts.genome-index]
 path = 'contracts/genome-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-sharing]
+[contracts.genome-exchange]
 path = 'contracts/genome-sharing.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-vault]
+[contracts.genome-safe]
 path = 'contracts/genome-vault.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genome-versioning]
+[contracts.genome-versions]
 path = 'contracts/genome-versioning.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.genomic-token]
+[contracts.x-genomic-token]
 path = 'contracts/genomic-token.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.health-data-nft]
+[contracts.health-nft-core]
 path = 'contracts/health-data-nft.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.health-record]
+[contracts.health-records-hub]
 path = 'contracts/health-record.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.hipaa-compliance]
+[contracts.hipaa-enforcer]
 path = 'contracts/hipaa-compliance.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.hl7-bridge]
+[contracts.hl7-connector]
 path = 'contracts/hl7-bridge.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.homomorphic-compute]
+[contracts.homomorphic-core]
 path = 'contracts/homomorphic-compute.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.hospital-registry]
+[contracts.hospital-index]
 path = 'contracts/hospital-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.icd-10-registry]
+[contracts.icd10-hub]
 path = 'contracts/icd-10-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.inference-engine]
+[contracts.inference-core]
 path = 'contracts/inference-engine.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.institution-reputation]
+[contracts.institution-score]
 path = 'contracts/institution-reputation.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.insurance-claim]
+[contracts.insurance-claims-hub]
 path = 'contracts/insurance-claim.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.insurance-registry]
+[contracts.insurance-index]
 path = 'contracts/insurance-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.key-management]
+[contracts.x-key-management]
 path = 'contracts/key-management.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.lab-registry]
+[contracts.lab-index]
 path = 'contracts/lab-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.lab-results]
+[contracts.lab-results-hub]
 path = 'contracts/lab-results.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.marketplace]
+[contracts.marketplace-core]
 path = 'contracts/marketplace.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.math-genetics]
+[contracts.genetics-math]
 path = 'contracts/math-genetics.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.medical-history]
+[contracts.medical-chronicles]
 path = 'contracts/medical-history.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.mock-genome-data]
+[contracts.mock-genome-store]
 path = 'contracts/mock-genome-data.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.mock-health-record]
+[contracts.mock-health-store]
 path = 'contracts/mock-health-record.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.mock-provider]
+[contracts.mock-provider-hub]
 path = 'contracts/mock-provider.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.model-training-rewards]
+[contracts.ml-training-rewards]
 path = 'contracts/model-training-rewards.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.multi-sig-health]
+[contracts.multisig-med]
 path = 'contracts/multi-sig-health.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.nft-marketplace]
+[contracts.nft-exchange]
 path = 'contracts/nft-marketplace.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.oracle-health-data]
+[contracts.oracle-health-hub]
 path = 'contracts/oracle-health-data.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.patient-rewards]
+[contracts.patient-incentives]
 path = 'contracts/patient-rewards.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.payment-processor]
+[contracts.payment-hub]
 path = 'contracts/payment-processor.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.pharmacy-registry]
+[contracts.pharmacy-index]
 path = 'contracts/pharmacy-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.prediction-market]
+[contracts.prediction-hub]
 path = 'contracts/prediction-market.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.prescription-registry]
+[contracts.prescription-tracker]
 path = 'contracts/prescription-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.privacy-manager]
+[contracts.x-privacy-manager]
 path = 'contracts/privacy-manager.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.provider-registry]
+[contracts.provider-index]
 path = 'contracts/provider-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.provider-verification]
+[contracts.provider-validator]
 path = 'contracts/provider-verification.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.publication-registry]
+[contracts.publication-hub]
 path = 'contracts/publication-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.reimbursement]
+[contracts.reimbursement-core]
 path = 'contracts/reimbursement.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.research-consent]
+[contracts.research-consent-mgr]
 path = 'contracts/research-consent.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.research-contribution-nft]
+[contracts.research-nft-core]
 path = 'contracts/research-contribution-nft.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.research-incentive]
+[contracts.research-rewards]
 path = 'contracts/research-incentive.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.research-marketplace]
+[contracts.research-exchange]
 path = 'contracts/research-marketplace.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.research-registry]
+[contracts.research-index]
 path = 'contracts/research-registry.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.risk-scoring]
+[contracts.risk-analyzer]
 path = 'contracts/risk-scoring.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.sample-generator]
+[contracts.sample-factory]
 path = 'contracts/sample-generator.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.staking-mechanism]
+[contracts.staking-core]
 path = 'contracts/staking-mechanism.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.string-genome]
+[contracts.genome-strings]
 path = 'contracts/string-genome.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.test-helpers-health]
+[contracts.test-helpers-med]
 path = 'contracts/test-helpers-health.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.test-patient]
+[contracts.test-patient-hub]
 path = 'contracts/test-patient.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.time-utils-health]
+[contracts.time-utils-med]
 path = 'contracts/time-utils-health.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.treasury-manager]
+[contracts.treasury-core]
 path = 'contracts/treasury-manager.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.treatment-plan]
+[contracts.treatment-planner]
 path = 'contracts/treatment-plan.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.vaccination-record]
+[contracts.vaccination-tracker]
 path = 'contracts/vaccination-record.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.validation-health]
+[contracts.validation-med]
 path = 'contracts/validation-health.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.verification]
+[contracts.x-verification]
 path = 'contracts/verification.clar'
 clarity_version = 4
 epoch = 'latest'
 
-[contracts.zero-knowledge-proof]
+[contracts.zkp-core]
 path = 'contracts/zero-knowledge-proof.clar'
 clarity_version = 4
 epoch = 'latest'
