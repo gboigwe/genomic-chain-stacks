@@ -1,50 +1,30 @@
-;; research-marketplace.clar - Clarity 4
-;; Anonymous data marketplace for research
+;; research-marketplace - Clarity 4
+;; Marketplace for genomic data sharing with researchers
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-LISTING-NOT-FOUND (err u101))
-
+(define-constant ERR-LISTING-NOT-FOUND (err u100))
 (define-data-var listing-counter uint u0)
 
-(define-map data-listings
-  { listing-id: uint }
-  {
-    seller: principal,
-    data-hash: (buff 32),
-    price: uint,
-    anonymization-level: uint,
-    created-at: uint,
-    is-sold: bool,
-    buyer: (optional principal)
-  }
-)
+(define-map data-listings { listing-id: uint }
+  { provider: principal, data-type: (string-ascii 50), price: uint, sample-size: uint, created-at: uint, is-available: bool })
 
-(define-public (list-data
-    (data-hash (buff 32))
-    (price uint)
-    (anonymization-level uint))
-  (let
-    ((new-id (+ (var-get listing-counter) u1)))
+(define-public (create-listing (data-type (string-ascii 50)) (price uint) (sample-size uint))
+  (let ((new-id (+ (var-get listing-counter) u1)))
     (map-set data-listings { listing-id: new-id }
-      {
-        seller: tx-sender,
-        data-hash: data-hash,
-        price: price,
-        anonymization-level: anonymization-level,
-        created-at: stacks-block-time,
-        is-sold: false,
-        buyer: none
-      })
+      { provider: tx-sender, data-type: data-type, price: price, sample-size: sample-size, created-at: stacks-block-time, is-available: true })
     (var-set listing-counter new-id)
     (ok new-id)))
 
-;; Clarity 4: principal-destruct?
-(define-read-only (validate-seller (seller principal))
-  (principal-destruct? seller))
-
-;; Clarity 4: int-to-ascii
-(define-read-only (format-listing-id (listing-id uint))
-  (ok (int-to-ascii listing-id)))
-
 (define-read-only (get-listing (listing-id uint))
   (ok (map-get? data-listings { listing-id: listing-id })))
+
+;; Clarity 4: principal-destruct?
+(define-read-only (validate-provider (provider principal)) (principal-destruct? provider))
+
+;; Clarity 4: int-to-ascii
+(define-read-only (format-listing-id (listing-id uint)) (ok (int-to-ascii listing-id)))
+
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-listing-id (id-str (string-ascii 20))) (string-to-uint? id-str))
+
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

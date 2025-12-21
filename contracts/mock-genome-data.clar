@@ -1,34 +1,29 @@
-;; mock-genome-data.clar - Clarity 4
-;; Mock genomic data for testing
+;; title: mock-genome-data
+;; version:
+;; summary:
+;; description:
 
-(define-data-var mock-counter uint u0)
+;; traits
+;;
 
-(define-map mock-genomes
-  { genome-id: uint }
-  {
-    mock-hash: (buff 32),
-    mock-sequence: (string-ascii 100),
-    created-at: uint
-  }
-)
+;; token definitions
+;;
 
-(define-public (create-mock-genome
-    (mock-hash (buff 32))
-    (mock-sequence (string-ascii 100)))
-  (let
-    ((new-id (+ (var-get mock-counter) u1)))
-    (map-set mock-genomes { genome-id: new-id }
-      {
-        mock-hash: mock-hash,
-        mock-sequence: mock-sequence,
-        created-at: stacks-block-time
-      })
-    (var-set mock-counter new-id)
-    (ok new-id)))
+;; constants
+;;
 
-;; Clarity 4 features
-(define-read-only (format-genome-id (genome-id uint))
-  (ok (int-to-ascii genome-id)))
+;; data vars
+;;
 
-(define-read-only (get-mock-genome (genome-id uint))
-  (ok (map-get? mock-genomes { genome-id: genome-id })))
+;; data maps
+;;
+
+;; public functions
+;;
+
+;; read only functions
+;;
+
+;; private functions
+;;
+

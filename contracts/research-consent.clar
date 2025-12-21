@@ -1,60 +1,34 @@
-;; research-consent.clar - Clarity 4
-;; Research-specific consent management
+;; research-consent - Clarity 4
+;; Patient consent for research participation
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-CONSENT-EXISTS (err u101))
+(define-constant ERR-CONSENT-NOT-FOUND (err u100))
+(define-data-var consent-counter uint u0)
 
-(define-map research-consents
-  { participant: principal, project-id: uint }
-  {
-    granted: bool,
-    granted-at: uint,
-    consent-form-hash: (buff 32),
-    withdrawal-allowed: bool,
-    data-usage-scope: (string-utf8 256),
-    compensation-agreed: uint
-  }
-)
+(define-map research-consents { consent-id: uint }
+  { patient: principal, project-id: uint, consent-type: (string-ascii 50), granted-at: uint, expires-at: uint, is-active: bool })
 
-(define-public (grant-research-consent
-    (project-id uint)
-    (consent-form-hash (buff 32))
-    (data-usage-scope (string-utf8 256))
-    (compensation uint))
-  (begin
-    (asserts! (is-none (map-get? research-consents { participant: tx-sender, project-id: project-id })) ERR-CONSENT-EXISTS)
-    (map-set research-consents { participant: tx-sender, project-id: project-id }
-      {
-        granted: true,
-        granted-at: stacks-block-time,
-        consent-form-hash: consent-form-hash,
-        withdrawal-allowed: true,
-        data-usage-scope: data-usage-scope,
-        compensation-agreed: compensation
-      })
-    (ok true)))
+(define-public (grant-consent (project-id uint) (consent-type (string-ascii 50)) (expiration uint))
+  (let ((new-id (+ (var-get consent-counter) u1)))
+    (map-set research-consents { consent-id: new-id }
+      { patient: tx-sender, project-id: project-id, consent-type: consent-type, granted-at: stacks-block-time, expires-at: expiration, is-active: true })
+    (var-set consent-counter new-id)
+    (ok new-id)))
 
-(define-public (withdraw-consent (project-id uint))
-  (begin
-    (map-delete research-consents { participant: tx-sender, project-id: project-id })
-    (ok true)))
+(define-public (revoke-consent (consent-id uint))
+  (let ((consent (unwrap! (map-get? research-consents { consent-id: consent-id }) ERR-CONSENT-NOT-FOUND)))
+    (ok (map-set research-consents { consent-id: consent-id } (merge consent { is-active: false })))))
+
+(define-read-only (get-consent (consent-id uint))
+  (ok (map-get? research-consents { consent-id: consent-id })))
 
 ;; Clarity 4: principal-destruct?
-(define-read-only (validate-participant (participant principal))
-  (principal-destruct? participant))
+(define-read-only (validate-patient (patient principal)) (principal-destruct? patient))
 
 ;; Clarity 4: int-to-utf8
-(define-read-only (format-project-id (project-id uint))
-  (ok (int-to-utf8 project-id)))
+(define-read-only (format-consent-id (consent-id uint)) (ok (int-to-utf8 consent-id)))
 
-;; Clarity 4: buff-to-uint-le
-(define-read-only (hash-to-number (hash-buff (buff 16)))
-  (ok (buff-to-uint-le hash-buff)))
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-consent-id (id-str (string-ascii 20))) (string-to-uint? id-str))
 
-(define-read-only (get-consent (participant principal) (project-id uint))
-  (ok (map-get? research-consents { participant: participant, project-id: project-id })))
-
-(define-read-only (has-valid-consent (participant principal) (project-id uint))
-  (match (map-get? research-consents { participant: participant, project-id: project-id })
-    consent (ok (get granted consent))
-    (ok false)))
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

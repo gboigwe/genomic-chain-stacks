@@ -1,27 +1,29 @@
-;; validation-health.clar - Clarity 4
-;; Health data validation
+;; title: validation-health
+;; version:
+;; summary:
+;; description:
 
-(define-read-only (is-valid-age (age uint))
-  (and (>= age u0) (<= age u150)))
+;; traits
+;;
 
-(define-read-only (is-valid-height (height-cm uint))
-  (and (>= height-cm u30) (<= height-cm u300)))
+;; token definitions
+;;
 
-(define-read-only (is-valid-weight (weight-kg uint))
-  (and (>= weight-kg u1) (<= weight-kg u500)))
+;; constants
+;;
 
-(define-read-only (is-valid-blood-pressure (systolic uint) (diastolic uint))
-  (and (>= systolic u60) (<= systolic u300)
-       (>= diastolic u40) (<= diastolic u200)))
+;; data vars
+;;
 
-;; Clarity 4: principal-destruct?
-(define-read-only (validate-principal (principal-to-check principal))
-  (principal-destruct? principal-to-check))
+;; data maps
+;;
 
-;; Clarity 4: int-to-ascii
-(define-read-only (format-measurement (value uint))
-  (ok (int-to-ascii value)))
+;; public functions
+;;
 
-;; Clarity 4: string-to-uint?
-(define-read-only (parse-measurement (value-str (string-ascii 20)))
-  (string-to-uint? value-str))
+;; read only functions
+;;
+
+;; private functions
+;;
+

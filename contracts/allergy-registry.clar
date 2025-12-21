@@ -1,67 +1,30 @@
-;; allergy-registry.clar - Clarity 4
-;; Patient allergy database
+;; allergy-registry - Clarity 4
+;; Patient allergy tracking and alerts
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-ALLERGY-EXISTS (err u101))
+(define-constant ERR-ALLERGY-NOT-FOUND (err u100))
+(define-data-var allergy-counter uint u0)
 
-(define-map allergies
-  { patient: principal, allergen: (string-ascii 100) }
-  {
-    severity: uint,
-    reaction-type: (string-ascii 100),
-    onset-date: uint,
-    verified-by: principal,
-    verified-at: uint,
-    is-active: bool,
-    notes: (string-utf8 256)
-  }
-)
+(define-map allergies { allergy-id: uint }
+  { patient: principal, allergen: (string-ascii 100), severity: (string-ascii 20), reaction: (string-utf8 200), recorded-at: uint })
 
-(define-public (register-allergy
-    (allergen (string-ascii 100))
-    (severity uint)
-    (reaction-type (string-ascii 100))
-    (onset-date uint)
-    (notes (string-utf8 256)))
-  (begin
-    (asserts! (is-none (map-get? allergies { patient: tx-sender, allergen: allergen })) ERR-ALLERGY-EXISTS)
-    (map-set allergies { patient: tx-sender, allergen: allergen }
-      {
-        severity: severity,
-        reaction-type: reaction-type,
-        onset-date: onset-date,
-        verified-by: tx-sender,
-        verified-at: stacks-block-time,
-        is-active: true,
-        notes: notes
-      })
-    (ok true)))
+(define-public (register-allergy (allergen (string-ascii 100)) (severity (string-ascii 20)) (reaction (string-utf8 200)))
+  (let ((new-id (+ (var-get allergy-counter) u1)))
+    (map-set allergies { allergy-id: new-id }
+      { patient: tx-sender, allergen: allergen, severity: severity, reaction: reaction, recorded-at: stacks-block-time })
+    (var-set allergy-counter new-id)
+    (ok new-id)))
 
-(define-public (update-allergy-status
-    (allergen (string-ascii 100))
-    (is-active bool))
-  (let
-    ((allergy (unwrap! (map-get? allergies { patient: tx-sender, allergen: allergen }) ERR-NOT-AUTHORIZED)))
-    (map-set allergies { patient: tx-sender, allergen: allergen }
-      (merge allergy { is-active: is-active }))
-    (ok true)))
+(define-read-only (get-allergy (allergy-id uint))
+  (ok (map-get? allergies { allergy-id: allergy-id })))
 
 ;; Clarity 4: principal-destruct?
-(define-read-only (validate-patient (patient principal))
-  (principal-destruct? patient))
+(define-read-only (validate-patient (patient principal)) (principal-destruct? patient))
 
 ;; Clarity 4: int-to-utf8
-(define-read-only (format-severity (severity uint))
-  (ok (int-to-utf8 severity)))
+(define-read-only (format-allergy-id (allergy-id uint)) (ok (int-to-utf8 allergy-id)))
+
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-allergy-id (id-str (string-ascii 20))) (string-to-uint? id-str))
 
 ;; Clarity 4: burn-block-height
-(define-read-only (get-bitcoin-height)
-  (ok burn-block-height))
-
-(define-read-only (get-allergy (patient principal) (allergen (string-ascii 100)))
-  (ok (map-get? allergies { patient: patient, allergen: allergen })))
-
-(define-read-only (has-active-allergy (patient principal) (allergen (string-ascii 100)))
-  (match (map-get? allergies { patient: patient, allergen: allergen })
-    allergy (ok (get is-active allergy))
-    (ok false)))
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

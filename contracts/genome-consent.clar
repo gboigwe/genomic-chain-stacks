@@ -1,82 +1,35 @@
-;; genome-consent.clar - Clarity 4
-;; Patient consent tracking for genomic data
+;; genome-consent - Clarity 4
+;; Patient consent management for genomic data usage
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-CONSENT-EXISTS (err u101))
-(define-constant ERR-CONSENT-NOT-FOUND (err u102))
+(define-constant ERR-CONSENT-NOT-FOUND (err u100))
+(define-data-var consent-counter uint u0)
 
-(define-map consent-records
-  { patient: principal, data-type: (string-ascii 50) }
-  {
-    granted: bool,
-    granted-at: uint,
-    expires-at: uint,
-    scope: (string-ascii 100),
-    revocable: bool,
-    purpose: (string-ascii 100)
-  }
-)
+(define-map consents { consent-id: uint }
+  { patient: principal, purpose: (string-ascii 100), granted-at: uint, revoked-at: (optional uint), is-active: bool })
 
-(define-map consent-history
-  { patient: principal, timestamp: uint }
-  {
-    action: (string-ascii 20),
-    data-type: (string-ascii 50),
-    recorded-at: uint
-  }
-)
+(define-public (grant-consent (purpose (string-ascii 100)))
+  (let ((new-id (+ (var-get consent-counter) u1)))
+    (map-set consents { consent-id: new-id }
+      { patient: tx-sender, purpose: purpose, granted-at: stacks-block-time, revoked-at: none, is-active: true })
+    (var-set consent-counter new-id)
+    (ok new-id)))
 
-(define-public (grant-consent
-    (data-type (string-ascii 50))
-    (expiration uint)
-    (scope (string-ascii 100))
-    (purpose (string-ascii 100)))
-  (begin
-    (map-set consent-records { patient: tx-sender, data-type: data-type }
-      {
-        granted: true,
-        granted-at: stacks-block-time,
-        expires-at: expiration,
-        scope: scope,
-        revocable: true,
-        purpose: purpose
-      })
-    (map-set consent-history { patient: tx-sender, timestamp: stacks-block-time }
-      {
-        action: "granted",
-        data-type: data-type,
-        recorded-at: stacks-block-time
-      })
-    (ok true)))
+(define-public (revoke-consent (consent-id uint))
+  (let ((consent (unwrap! (map-get? consents { consent-id: consent-id }) ERR-CONSENT-NOT-FOUND)))
+    (ok (map-set consents { consent-id: consent-id }
+      (merge consent { revoked-at: (some stacks-block-time), is-active: false })))))
 
-(define-public (revoke-consent (data-type (string-ascii 50)))
-  (begin
-    (asserts! (is-some (map-get? consent-records { patient: tx-sender, data-type: data-type })) ERR-CONSENT-NOT-FOUND)
-    (map-delete consent-records { patient: tx-sender, data-type: data-type })
-    (map-set consent-history { patient: tx-sender, timestamp: stacks-block-time }
-      {
-        action: "revoked",
-        data-type: data-type,
-        recorded-at: stacks-block-time
-      })
-    (ok true)))
+(define-read-only (get-consent (consent-id uint))
+  (ok (map-get? consents { consent-id: consent-id })))
 
-;; Clarity 4: principal-destruct? - Validate patient
-(define-read-only (validate-patient (patient principal))
-  (principal-destruct? patient))
+;; Clarity 4: principal-destruct?
+(define-read-only (validate-patient (patient principal)) (principal-destruct? patient))
 
-;; Clarity 4: int-to-utf8 - Format timestamp
-(define-read-only (format-timestamp (timestamp uint))
-  (ok (int-to-utf8 timestamp)))
+;; Clarity 4: int-to-ascii
+(define-read-only (format-consent-id (consent-id uint)) (ok (int-to-ascii consent-id)))
 
-;; Clarity 4: stacks-block-time
-(define-read-only (get-current-time)
-  (ok stacks-block-time))
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-consent-id (id-str (string-ascii 20))) (string-to-uint? id-str))
 
-(define-read-only (get-consent (patient principal) (data-type (string-ascii 50)))
-  (ok (map-get? consent-records { patient: patient, data-type: data-type })))
-
-(define-read-only (is-consent-valid (patient principal) (data-type (string-ascii 50)))
-  (match (map-get? consent-records { patient: patient, data-type: data-type })
-    consent (ok (and (get granted consent) (< stacks-block-time (get expires-at consent))))
-    (ok false)))
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

@@ -1,45 +1,30 @@
-;; anonymization-engine.clar - Clarity 4
-;; De-identification of genomic data
+;; anonymization-engine - Clarity 4
+;; Data anonymization and de-identification
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
+(define-constant ERR-REQUEST-NOT-FOUND (err u100))
+(define-data-var request-counter uint u0)
 
-(define-data-var anonymization-counter uint u0)
+(define-map anonymization-requests { request-id: uint }
+  { requester: principal, data-hash: (buff 64), technique: (string-ascii 50), anonymized-hash: (optional (buff 64)), completed-at: (optional uint) })
 
-(define-map anonymized-datasets
-  { dataset-id: uint }
-  {
-    original-owner: principal,
-    anonymized-hash: (buff 32),
-    anonymization-method: (string-ascii 50),
-    created-at: uint,
-    is-reversible: bool
-  }
-)
-
-(define-public (anonymize-data
-    (original-hash (buff 32))
-    (anonymized-hash (buff 32))
-    (method (string-ascii 50))
-    (is-reversible bool))
-  (let
-    ((new-id (+ (var-get anonymization-counter) u1)))
-    (map-set anonymized-datasets { dataset-id: new-id }
-      {
-        original-owner: tx-sender,
-        anonymized-hash: anonymized-hash,
-        anonymization-method: method,
-        created-at: stacks-block-time,
-        is-reversible: is-reversible
-      })
-    (var-set anonymization-counter new-id)
+(define-public (request-anonymization (data-hash (buff 64)) (technique (string-ascii 50)))
+  (let ((new-id (+ (var-get request-counter) u1)))
+    (map-set anonymization-requests { request-id: new-id }
+      { requester: tx-sender, data-hash: data-hash, technique: technique, anonymized-hash: none, completed-at: none })
+    (var-set request-counter new-id)
     (ok new-id)))
 
-;; Clarity 4 features
-(define-read-only (validate-owner (owner principal))
-  (principal-destruct? owner))
+(define-read-only (get-request (request-id uint))
+  (ok (map-get? anonymization-requests { request-id: request-id })))
 
-(define-read-only (format-id (dataset-id uint))
-  (ok (int-to-ascii dataset-id)))
+;; Clarity 4: principal-destruct?
+(define-read-only (validate-requester (requester principal)) (principal-destruct? requester))
 
-(define-read-only (get-dataset (dataset-id uint))
-  (ok (map-get? anonymized-datasets { dataset-id: dataset-id })))
+;; Clarity 4: int-to-utf8
+(define-read-only (format-request-id (request-id uint)) (ok (int-to-utf8 request-id)))
+
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-request-id (id-str (string-ascii 20))) (string-to-uint? id-str))
+
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

@@ -1,47 +1,30 @@
-;; research-incentive.clar - Clarity 4
-;; Reward data contributors in research
+;; research-incentive - Clarity 4
+;; Incentive distribution for research participation
 
-(define-constant ERR-NOT-AUTHORIZED (err u100))
+(define-constant ERR-REWARD-NOT-FOUND (err u100))
+(define-data-var reward-counter uint u0)
 
-(define-map participant-rewards
-  { participant: principal, project-id: uint }
-  {
-    contribution-value: uint,
-    reward-amount: uint,
-    claimed: bool,
-    granted-at: uint
-  }
-)
+(define-map research-rewards { reward-id: uint }
+  { participant: principal, project-id: uint, amount: uint, reason: (string-ascii 100), awarded-at: uint, is-claimed: bool })
 
-(define-public (grant-reward
-    (participant principal)
-    (project-id uint)
-    (contribution-value uint)
-    (reward-amount uint))
-  (begin
-    (map-set participant-rewards { participant: participant, project-id: project-id }
-      {
-        contribution-value: contribution-value,
-        reward-amount: reward-amount,
-        claimed: false,
-        granted-at: stacks-block-time
-      })
-    (ok true)))
+(define-public (award-reward (participant principal) (project-id uint) (amount uint) (reason (string-ascii 100)))
+  (let ((new-id (+ (var-get reward-counter) u1)))
+    (map-set research-rewards { reward-id: new-id }
+      { participant: participant, project-id: project-id, amount: amount, reason: reason, awarded-at: stacks-block-time, is-claimed: false })
+    (var-set reward-counter new-id)
+    (ok new-id)))
 
-(define-public (claim-reward (project-id uint))
-  (let
-    ((reward (unwrap! (map-get? participant-rewards { participant: tx-sender, project-id: project-id }) ERR-NOT-AUTHORIZED)))
-    (asserts! (not (get claimed reward)) ERR-NOT-AUTHORIZED)
-    (map-set participant-rewards { participant: tx-sender, project-id: project-id }
-      (merge reward { claimed: true }))
-    (ok (get reward-amount reward))))
+(define-read-only (get-reward (reward-id uint))
+  (ok (map-get? research-rewards { reward-id: reward-id })))
 
-;; Clarity 4 features
-(define-read-only (validate-participant (participant principal))
-  (principal-destruct? participant))
+;; Clarity 4: principal-destruct?
+(define-read-only (validate-participant (participant principal)) (principal-destruct? participant))
 
-(define-read-only (format-project-id (project-id uint))
-  (ok (int-to-ascii project-id)))
+;; Clarity 4: int-to-ascii
+(define-read-only (format-reward-id (reward-id uint)) (ok (int-to-ascii reward-id)))
 
-(define-read-only (get-reward (participant principal) (project-id uint))
-  (ok (map-get? participant-rewards { participant: participant, project-id: project-id })))
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-reward-id (id-str (string-ascii 20))) (string-to-uint? id-str))
+
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block) (ok burn-block-height))

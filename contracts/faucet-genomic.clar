@@ -1,39 +1,29 @@
-;; faucet-genomic.clar - Clarity 4
-;; Testnet faucet for genomic tokens
+;; title: faucet-genomic
+;; version:
+;; summary:
+;; description:
 
-(define-constant ERR-ALREADY-CLAIMED (err u400))
-(define-constant DRIP-AMOUNT u1000000)
+;; traits
+;;
 
-(define-data-var total-distributed uint u0)
+;; token definitions
+;;
 
-(define-map claims
-  { claimer: principal }
-  { amount: uint, claimed-at: uint }
-)
+;; constants
+;;
 
-(define-public (claim-tokens)
-  (let
-    ((caller tx-sender))
-    (asserts! (is-none (map-get? claims { claimer: caller })) ERR-ALREADY-CLAIMED)
-    (map-set claims { claimer: caller }
-      { amount: DRIP-AMOUNT, claimed-at: stacks-block-time })
-    (var-set total-distributed (+ (var-get total-distributed) DRIP-AMOUNT))
-    (ok DRIP-AMOUNT)))
+;; data vars
+;;
 
-;; Clarity 4: principal-destruct?
-(define-read-only (validate-claimer (claimer principal))
-  (principal-destruct? claimer))
+;; data maps
+;;
 
-;; Clarity 4: int-to-utf8
-(define-read-only (format-total-distributed)
-  (ok (int-to-utf8 (var-get total-distributed))))
+;; public functions
+;;
 
-;; Clarity 4: burn-block-height
-(define-read-only (get-bitcoin-height)
-  (ok burn-block-height))
+;; read only functions
+;;
 
-(define-read-only (get-claim (claimer principal))
-  (ok (map-get? claims { claimer: claimer })))
+;; private functions
+;;
 
-(define-read-only (get-total-distributed)
-  (ok (var-get total-distributed)))

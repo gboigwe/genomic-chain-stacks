@@ -5,8 +5,113 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
+[contracts.access-audit]
+path = 'contracts/access-audit.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.ai-model-registry]
+path = 'contracts/ai-model-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.allergy-registry]
+path = 'contracts/allergy-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.anonymization-engine]
+path = 'contracts/anonymization-engine.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.api-gateway]
+path = 'contracts/api-gateway.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.breach-detection]
+path = 'contracts/breach-detection.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.clinical-trial]
+path = 'contracts/clinical-trial.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.cohort-builder]
+path = 'contracts/cohort-builder.clar'
+clarity_version = 4
+epoch = 'latest'
+
 [contracts.compliance]
 path = 'contracts/compliance.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.cross-chain-health]
+path = 'contracts/cross-chain-health.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.data-deletion]
+path = 'contracts/data-deletion.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.data-royalty]
+path = 'contracts/data-royalty.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.diagnosis-record]
+path = 'contracts/diagnosis-record.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.dicom-handler]
+path = 'contracts/dicom-handler.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.dispute-resolution]
+path = 'contracts/dispute-resolution.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.emergency-access]
+path = 'contracts/emergency-access.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.encoding-genome]
+path = 'contracts/encoding-genome.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.faucet-genomic]
+path = 'contracts/faucet-genomic.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.federated-learning]
+path = 'contracts/federated-learning.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.fee-collector]
+path = 'contracts/fee-collector.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.fhir-adapter]
+path = 'contracts/fhir-adapter.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.fractional-data-nft]
+path = 'contracts/fractional-data-nft.clar'
 clarity_version = 4
 epoch = 'latest'
 
@@ -20,13 +125,323 @@ path = 'contracts/genetic-data-trait.clar'
 clarity_version = 4
 epoch = 'latest'
 
+[contracts.genome-access-control]
+path = 'contracts/genome-access-control.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-audit]
+path = 'contracts/genome-audit.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-consent]
+path = 'contracts/genome-consent.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-encryption]
+path = 'contracts/genome-encryption.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-metadata]
+path = 'contracts/genome-metadata.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-nft]
+path = 'contracts/genome-nft.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-provenance]
+path = 'contracts/genome-provenance.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-registry]
+path = 'contracts/genome-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-sharing]
+path = 'contracts/genome-sharing.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-vault]
+path = 'contracts/genome-vault.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genome-versioning]
+path = 'contracts/genome-versioning.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.genomic-token]
+path = 'contracts/genomic-token.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.health-data-nft]
+path = 'contracts/health-data-nft.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.health-record]
+path = 'contracts/health-record.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.hipaa-compliance]
+path = 'contracts/hipaa-compliance.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.hl7-bridge]
+path = 'contracts/hl7-bridge.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.homomorphic-compute]
+path = 'contracts/homomorphic-compute.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.hospital-registry]
+path = 'contracts/hospital-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.icd-10-registry]
+path = 'contracts/icd-10-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.inference-engine]
+path = 'contracts/inference-engine.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.institution-reputation]
+path = 'contracts/institution-reputation.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.insurance-claim]
+path = 'contracts/insurance-claim.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.insurance-registry]
+path = 'contracts/insurance-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.key-management]
+path = 'contracts/key-management.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.lab-registry]
+path = 'contracts/lab-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.lab-results]
+path = 'contracts/lab-results.clar'
+clarity_version = 4
+epoch = 'latest'
+
 [contracts.marketplace]
 path = 'contracts/marketplace.clar'
 clarity_version = 4
 epoch = 'latest'
 
+[contracts.math-genetics]
+path = 'contracts/math-genetics.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.medical-history]
+path = 'contracts/medical-history.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.mock-genome-data]
+path = 'contracts/mock-genome-data.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.mock-health-record]
+path = 'contracts/mock-health-record.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.mock-provider]
+path = 'contracts/mock-provider.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.model-training-rewards]
+path = 'contracts/model-training-rewards.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.multi-sig-health]
+path = 'contracts/multi-sig-health.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.nft-marketplace]
+path = 'contracts/nft-marketplace.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.oracle-health-data]
+path = 'contracts/oracle-health-data.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.patient-rewards]
+path = 'contracts/patient-rewards.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.payment-processor]
+path = 'contracts/payment-processor.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.pharmacy-registry]
+path = 'contracts/pharmacy-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.prediction-market]
+path = 'contracts/prediction-market.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.prescription-registry]
+path = 'contracts/prescription-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.privacy-manager]
+path = 'contracts/privacy-manager.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.provider-registry]
+path = 'contracts/provider-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.provider-verification]
+path = 'contracts/provider-verification.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.publication-registry]
+path = 'contracts/publication-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.reimbursement]
+path = 'contracts/reimbursement.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.research-consent]
+path = 'contracts/research-consent.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.research-contribution-nft]
+path = 'contracts/research-contribution-nft.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.research-incentive]
+path = 'contracts/research-incentive.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.research-marketplace]
+path = 'contracts/research-marketplace.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.research-registry]
+path = 'contracts/research-registry.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.risk-scoring]
+path = 'contracts/risk-scoring.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.sample-generator]
+path = 'contracts/sample-generator.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.staking-mechanism]
+path = 'contracts/staking-mechanism.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.string-genome]
+path = 'contracts/string-genome.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.test-helpers-health]
+path = 'contracts/test-helpers-health.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.test-patient]
+path = 'contracts/test-patient.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.time-utils-health]
+path = 'contracts/time-utils-health.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.treasury-manager]
+path = 'contracts/treasury-manager.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.treatment-plan]
+path = 'contracts/treatment-plan.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.vaccination-record]
+path = 'contracts/vaccination-record.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.validation-health]
+path = 'contracts/validation-health.clar'
+clarity_version = 4
+epoch = 'latest'
+
 [contracts.verification]
 path = 'contracts/verification.clar'
+clarity_version = 4
+epoch = 'latest'
+
+[contracts.zero-knowledge-proof]
+path = 'contracts/zero-knowledge-proof.clar'
 clarity_version = 4
 epoch = 'latest'
 [repl.analysis]

@@ -1,23 +1,29 @@
-;; test-helpers-health.clar - Clarity 4
-;; Testing utilities for health data
+;; title: test-helpers-health
+;; version:
+;; summary:
+;; description:
 
-(define-read-only (create-test-patient-id (index uint))
-  (ok (+ u1000000 index)))
+;; traits
+;;
 
-(define-read-only (create-test-hash (value uint))
-  (ok 0x0000000000000000000000000000000000000000000000000000000000000000))
+;; token definitions
+;;
 
-(define-read-only (get-test-timestamp)
-  (ok stacks-block-time))
+;; constants
+;;
 
-;; Clarity 4: int-to-ascii
-(define-read-only (format-test-id (test-id uint))
-  (ok (int-to-ascii test-id)))
+;; data vars
+;;
 
-;; Clarity 4: string-to-uint?
-(define-read-only (parse-test-id (id-str (string-ascii 20)))
-  (string-to-uint? id-str))
+;; data maps
+;;
 
-;; Clarity 4: principal-destruct?
-(define-read-only (validate-test-principal (test-principal principal))
-  (principal-destruct? test-principal))
+;; public functions
+;;
+
+;; read only functions
+;;
+
+;; private functions
+;;
+
