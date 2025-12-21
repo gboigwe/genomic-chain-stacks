@@ -1,39 +1,98 @@
-;; genome-nft.clar - Clarity 4
-;; Genomic data NFT (SIP-009)
+;; genome-nft - Clarity 4
+;; NFT representation of genomic data ownership
 
 (impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
 
-(define-non-fungible-token genome-data uint)
-
 (define-constant ERR-NOT-AUTHORIZED (err u100))
-(define-constant ERR-NOT-FOUND (err u101))
+(define-constant ERR-NFT-EXISTS (err u101))
+(define-constant ERR-NFT-NOT-FOUND (err u102))
+(define-constant ERR-INVALID-OWNER (err u103))
 
-(define-data-var token-counter uint u0)
+(define-non-fungible-token genome-nft uint)
+(define-data-var nft-counter uint u0)
 
-(define-public (mint (recipient principal) (data-hash (buff 32)))
+(define-map nft-metadata uint
+  {
+    data-hash: (buff 64),
+    genome-type: (string-ascii 50),
+    sample-date: uint,
+    quality-score: uint,
+    is-verified: bool,
+    metadata-uri: (string-utf8 256)
+  }
+)
+
+(define-map nft-royalties uint
+  {
+    original-owner: principal,
+    royalty-percentage: uint
+  }
+)
+
+(define-public (mint
+    (data-hash (buff 64))
+    (genome-type (string-ascii 50))
+    (sample-date uint)
+    (quality-score uint)
+    (metadata-uri (string-utf8 256)))
   (let
-    ((token-id (+ (var-get token-counter) u1)))
-    (try! (nft-mint? genome-data token-id recipient))
-    (var-set token-counter token-id)
-    (ok token-id)))
+    ((new-id (+ (var-get nft-counter) u1)))
+    (asserts! (<= quality-score u100) (err u104))
+    (try! (nft-mint? genome-nft new-id tx-sender))
+    (map-set nft-metadata new-id
+      {
+        data-hash: data-hash,
+        genome-type: genome-type,
+        sample-date: sample-date,
+        quality-score: quality-score,
+        is-verified: false,
+        metadata-uri: metadata-uri
+      })
+    (map-set nft-royalties new-id
+      {
+        original-owner: tx-sender,
+        royalty-percentage: u10
+      })
+    (var-set nft-counter new-id)
+    (ok new-id)))
 
 (define-public (transfer (token-id uint) (sender principal) (recipient principal))
   (begin
     (asserts! (is-eq tx-sender sender) ERR-NOT-AUTHORIZED)
-    (nft-transfer? genome-data token-id sender recipient)))
+    (asserts! (is-some (nft-get-owner? genome-nft token-id)) ERR-NFT-NOT-FOUND)
+    (nft-transfer? genome-nft token-id sender recipient)))
+
+(define-public (verify-nft (token-id uint))
+  (let ((metadata (unwrap! (map-get? nft-metadata token-id) ERR-NFT-NOT-FOUND)))
+    (ok (map-set nft-metadata token-id (merge metadata { is-verified: true })))))
 
 (define-read-only (get-last-token-id)
-  (ok (var-get token-counter)))
+  (ok (var-get nft-counter)))
 
 (define-read-only (get-token-uri (token-id uint))
-  (ok none))
+  (ok (some (get metadata-uri (unwrap! (map-get? nft-metadata token-id) ERR-NFT-NOT-FOUND)))))
 
 (define-read-only (get-owner (token-id uint))
-  (ok (nft-get-owner? genome-data token-id)))
+  (ok (nft-get-owner? genome-nft token-id)))
 
-;; Clarity 4 features
+(define-read-only (get-metadata (token-id uint))
+  (ok (map-get? nft-metadata token-id)))
+
+(define-read-only (get-royalty-info (token-id uint))
+  (ok (map-get? nft-royalties token-id)))
+
+;; Clarity 4: principal-destruct?
 (define-read-only (validate-owner (owner principal))
   (principal-destruct? owner))
 
+;; Clarity 4: int-to-ascii
 (define-read-only (format-token-id (token-id uint))
   (ok (int-to-ascii token-id)))
+
+;; Clarity 4: string-to-uint?
+(define-read-only (parse-token-id (id-str (string-ascii 20)))
+  (string-to-uint? id-str))
+
+;; Clarity 4: burn-block-height
+(define-read-only (get-bitcoin-block)
+  (ok burn-block-height))
