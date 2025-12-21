@@ -1,0 +1,46 @@
+---
+id: 0
+name: Mainnet deployment
+network: mainnet
+stacks-node: "https://api.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: compliance
+            expected-sender: SP3BXJENEWVNCFYGJF75DFS478H1BZJXNZPT84EAD
+            cost: 142290
+            path: contracts/compliance.clar
+            anchor-block-only: true
+            clarity-version: 4
+        - contract-publish:
+            contract-name: genetic-data-trait
+            expected-sender: SP3BXJENEWVNCFYGJF75DFS478H1BZJXNZPT84EAD
+            cost: 5450
+            path: contracts/genetic-data-trait.clar
+            anchor-block-only: true
+            clarity-version: 4
+        - contract-publish:
+            contract-name: genetic-data
+            expected-sender: SP3BXJENEWVNCFYGJF75DFS478H1BZJXNZPT84EAD
+            cost: 75570
+            path: contracts/genetic-data.clar
+            anchor-block-only: true
+            clarity-version: 4
+        - contract-publish:
+            contract-name: verification
+            expected-sender: SP3BXJENEWVNCFYGJF75DFS478H1BZJXNZPT84EAD
+            cost: 101780
+            path: contracts/verification.clar
+            anchor-block-only: true
+            clarity-version: 4
+        - contract-publish:
+            contract-name: marketplace
+            expected-sender: SP3BXJENEWVNCFYGJF75DFS478H1BZJXNZPT84EAD
+            cost: 151350
+            path: contracts/marketplace.clar
+            anchor-block-only: true
+            clarity-version: 4
+      epoch: "3.3"

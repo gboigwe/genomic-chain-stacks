@@ -1,7 +1,7 @@
 ;; genomic-token - Clarity 4
 ;; Fungible token for genomic data platform economy
 
-(impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait)
+;; (impl-trait 'SP3FBR2AGK5H9QBDH3EEN6DF8EK8JY7RX8QJ5SVTE.sip-010-trait-ft-standard.sip-010-trait) ;; Commented for local testing
 
 (define-constant ERR-NOT-AUTHORIZED (err u100))
 (define-constant ERR-INSUFFICIENT-BALANCE (err u101))

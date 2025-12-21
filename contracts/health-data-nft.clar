@@ -1,7 +1,7 @@
 ;; health-data-nft - Clarity 4
 ;; NFT for comprehensive health records
 
-(impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
+;; (impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait) ;; Commented for local testing
 
 (define-constant ERR-NOT-AUTHORIZED (err u100))
 (define-constant ERR-NFT-NOT-FOUND (err u102))
