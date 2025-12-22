@@ -5,100 +5,100 @@ authors = []
 telemetry = true
 cache_dir = './.cache'
 requirements = []
-[contracts.x-access-audit]
-path = 'contracts/access-audit.clar'
-clarity_version = 4
-epoch = 'latest'
+## [contracts.x-access-audit]
+## path = 'contracts/access-audit.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.ai-model-hub]
+## path = 'contracts/ai-model-registry.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.allergy-tracker]
+## path = 'contracts/allergy-registry.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.anonymization-core]
+## path = 'contracts/anonymization-engine.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.x-api-gateway]
+## path = 'contracts/api-gateway.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.breach-monitor]
+## path = 'contracts/breach-detection.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.clinical-trials-hub]
+## path = 'contracts/clinical-trial.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.cohort-manager]
+## path = 'contracts/cohort-builder.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.compliance-core]
+## path = 'contracts/compliance.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.cross-chain-med]
+## path = 'contracts/cross-chain-health.clar'
+## clarity_version = 4
+## epoch = 'latest'
 
-[contracts.ai-model-hub]
-path = 'contracts/ai-model-registry.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.allergy-tracker]
-path = 'contracts/allergy-registry.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.anonymization-core]
-path = 'contracts/anonymization-engine.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.x-api-gateway]
-path = 'contracts/api-gateway.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.breach-monitor]
-path = 'contracts/breach-detection.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.clinical-trials-hub]
-path = 'contracts/clinical-trial.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.cohort-manager]
-path = 'contracts/cohort-builder.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.compliance-core]
-path = 'contracts/compliance.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.cross-chain-med]
-path = 'contracts/cross-chain-health.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.data-eraser]
-path = 'contracts/data-deletion.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.x-data-royalty]
-path = 'contracts/data-royalty.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.diagnosis-tracker]
-path = 'contracts/diagnosis-record.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.dicom-processor]
-path = 'contracts/dicom-handler.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.dispute-arbiter]
-path = 'contracts/dispute-resolution.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.emergency-gateway]
-path = 'contracts/emergency-access.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.genome-encoder]
-path = 'contracts/encoding-genome.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.genomic-faucet]
-path = 'contracts/faucet-genomic.clar'
-clarity_version = 4
-epoch = 'latest'
-
-[contracts.federated-ml]
-path = 'contracts/federated-learning.clar'
-clarity_version = 4
-epoch = 'latest'
+## [contracts.data-eraser]
+## path = 'contracts/data-deletion.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.x-data-royalty]
+## path = 'contracts/data-royalty.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.diagnosis-tracker]
+## path = 'contracts/diagnosis-record.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.dicom-processor]
+## path = 'contracts/dicom-handler.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.dispute-arbiter]
+## path = 'contracts/dispute-resolution.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.emergency-gateway]
+## path = 'contracts/emergency-access.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.genome-encoder]
+## path = 'contracts/encoding-genome.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.genomic-faucet]
+## path = 'contracts/faucet-genomic.clar'
+## clarity_version = 4
+## epoch = 'latest'
+## 
+## [contracts.federated-ml]
+## path = 'contracts/federated-learning.clar'
+## clarity_version = 4
+## epoch = 'latest'
 
 [contracts.fee-hub]
 path = 'contracts/fee-collector.clar'
